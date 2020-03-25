@@ -13,7 +13,7 @@ public class App {
 
     public static void main(String[] args) {
         List<String> lista = Arrays.asList("a","b");
-
+        System.out.println("Teste");
         lista.parallelStream().forEach(System.out::println);
 
         System.out.println(new App().getGreeting());

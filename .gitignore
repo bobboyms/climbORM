@@ -18,6 +18,7 @@ build-idea/
 #eclipse
 .settings
 .class
+*.class
 /target/
 target/
 build-eclipse/
