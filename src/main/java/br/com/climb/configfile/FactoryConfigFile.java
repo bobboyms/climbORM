@@ -23,14 +23,14 @@ public class FactoryConfigFile {
         }
 
         return values[1].toLowerCase();
-    };
+    }
 
     public ConfigFile getConfigFile(final String fileName) throws ConfigFileException {
 
         final String fileType = getTypeFile(fileName);
 
         if (fileType.equals(FILE_PROPERTIES)) {
-            return null;
+            return PropertiesFile.generateConfigFile(fileName);
         }
 
         if (fileType.equals(FILE_YML)) {

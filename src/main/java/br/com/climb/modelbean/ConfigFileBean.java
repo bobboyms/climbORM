@@ -1,20 +1,28 @@
-package br.com.climb.modelBean;
+package br.com.climb.modelbean;
 
 public abstract class ConfigFileBean {
-
-    private String sgdb;
+    private String driver;
     private String url;
+    private String port;
     private String user;
     private String password;
     private String database;
     private boolean ssl = false;
 
-    public String getSgdb() {
-        return sgdb;
+    public String getDriver() {
+        return driver;
     }
 
-    public void setSgdb(String sgdb) {
-        this.sgdb = sgdb;
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
     }
 
     public String getUrl() {
@@ -56,15 +64,5 @@ public abstract class ConfigFileBean {
     public void setSsl(boolean ssl) {
         this.ssl = ssl;
     }
-
-
-
-//    sgdb=postgres
-//            url=127.0.0.1
-//    user=postgres
-//            password=123456789
-//    database=Teste
-//            port=5432
-//    ssl=false
 
 }

@@ -1,12 +1,12 @@
 package br.com.climb.configfile.interfaces;
 
 public interface ConfigFile {
-
-    public String getSgdb();
-    public String getUrl();
-    public String getUser();
-    public String getPassword();
-    public String getDatabase();
-    public boolean isSsl();
+    String getDriver();
+    String getPort();
+    String getUrl();
+    String getUser();
+    String getPassword();
+    String getDatabase();
+    boolean isSsl();
 
 }

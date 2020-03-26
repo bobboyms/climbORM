@@ -21,7 +21,7 @@ public class FactoryConfigFileTest {
     @DisplayName("verifica o retorno a exeption \"unsupported configuration file\"")
     public void test_verifyException1() {
         try {
-            assertThat(factoryConfigFile.getTypeFile("config"), is("properties"));
+            factoryConfigFile.getTypeFile("config");
         } catch (ConfigFileException e) {
             assertThat(e.getMessage(), is("unsupported configuration file"));
         }
@@ -31,7 +31,7 @@ public class FactoryConfigFileTest {
     @DisplayName("verifica o retorno a exception \"the configuration file cannot be null or empty\" quando vazio")
     public void test_verifyException2() {
         try {
-            assertThat(factoryConfigFile.getTypeFile(""), is("properties"));
+            factoryConfigFile.getTypeFile("");
         } catch (ConfigFileException e) {
             assertThat(e.getMessage(), is("the configuration file cannot be null or empty"));
         }
@@ -41,7 +41,7 @@ public class FactoryConfigFileTest {
     @DisplayName("verifica o retorno a exception \"the configuration file cannot be null or empty\" quando null")
     public void test_verifyException3() {
         try {
-            assertThat(factoryConfigFile.getTypeFile(null), is("properties"));
+            factoryConfigFile.getTypeFile(null);
         } catch (ConfigFileException e) {
             assertThat(e.getMessage(), is("the configuration file cannot be null or empty"));
         }
