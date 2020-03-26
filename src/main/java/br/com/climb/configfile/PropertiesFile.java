@@ -36,6 +36,8 @@ public class PropertiesFile extends ConfigFileBean implements ConfigFile {
         super.setDriver(properties.getProperty("persistence.jdbc.port"));
     }
 
+    protected PropertiesFile(){}
+
     public PropertiesFile(String fileName) throws ConfigFileException, IOException {
         generateConfigData(loadProperties(getInputStream(fileName)));
     }

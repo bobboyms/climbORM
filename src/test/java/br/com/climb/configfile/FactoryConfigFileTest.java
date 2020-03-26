@@ -15,12 +15,12 @@ public class FactoryConfigFileTest {
     private FactoryConfigFile factoryConfigFile = new FactoryConfigFile();
 
     @Test
-    public void test_verifyTypeFile() throws ConfigFileException {
+    public void getTypeFile() throws ConfigFileException {
         assertThat(factoryConfigFile.getTypeFile("config.properties"), is("properties"));
     }
 
     @Test()
-    public void test_verifyException1() {
+    public void test_getTypeFile1() {
         try {
             factoryConfigFile.getTypeFile("config");
         } catch (ConfigFileException e) {
@@ -29,7 +29,7 @@ public class FactoryConfigFileTest {
     }
 
     @Test()
-    public void test_verifyException2() {
+    public void test_getTypeFile2() {
         try {
             factoryConfigFile.getTypeFile("");
         } catch (ConfigFileException e) {
@@ -38,7 +38,7 @@ public class FactoryConfigFileTest {
     }
 
     @Test()
-    public void test_verifyException3() {
+    public void test_getTypeFile() {
         try {
             factoryConfigFile.getTypeFile(null);
         } catch (ConfigFileException e) {
@@ -48,7 +48,7 @@ public class FactoryConfigFileTest {
 
     @Test()
     @DisplayName("verifica o retorno a exception \"the configuration file cannot be null or empty\" quando null")
-    public void test_verifyException4() throws ConfigFileException, IOException {
+    public void test_getConfigFile() throws ConfigFileException, IOException {
         ConfigFile configFile = factoryConfigFile.getConfigFile("climb.properties");
         assert configFile != null;
         assertThat(false, is(configFile.getDatabase() == null));
@@ -60,7 +60,7 @@ public class FactoryConfigFileTest {
     }
 
     @Test()
-    public void test_verifyException5() throws IOException {
+    public void test_getConfigFile1() throws IOException {
         try {
             factoryConfigFile.getConfigFile("climbx.properties");
         } catch (ConfigFileException e) {
@@ -69,7 +69,7 @@ public class FactoryConfigFileTest {
     }
 
     @Test()
-    public void test_verifyException6() throws IOException {
+    public void test_getConfigFile2() throws IOException {
         try {
             factoryConfigFile.getConfigFile("climb.txt");
         } catch (ConfigFileException e) {

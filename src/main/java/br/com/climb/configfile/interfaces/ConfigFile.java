@@ -7,6 +7,4 @@ public interface ConfigFile {
     String getUser();
     String getPassword();
     String getDatabase();
-    boolean isSsl();
-
 }
