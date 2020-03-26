@@ -3,13 +3,13 @@ package br.com.climb.configfile;
 import br.com.climb.configfile.interfaces.ConfigFile;
 import br.com.climb.exception.ConfigFileException;
 
-import static java.util.Objects.isNull;
+import java.io.IOException;
+
 import static br.com.climb.utils.Utils.isStringNullOrEmpty;
 
 public class FactoryConfigFile {
 
     private static final String FILE_PROPERTIES = "properties";
-    private static final String FILE_YML =  "yml";
 
     protected String getTypeFile(final String fileName) throws ConfigFileException {
 
@@ -18,26 +18,22 @@ public class FactoryConfigFile {
         }
 
         String[] values =  fileName.split("\\.");
-        if (isNull(values) || values.length == 1) {
+        if (values.length == 1) {
             throw new ConfigFileException("unsupported configuration file");
         }
 
         return values[1].toLowerCase();
     }
 
-    public ConfigFile getConfigFile(final String fileName) throws ConfigFileException {
+    public ConfigFile getConfigFile(final String fileName) throws ConfigFileException, IOException {
 
         final String fileType = getTypeFile(fileName);
 
         if (fileType.equals(FILE_PROPERTIES)) {
-            return PropertiesFile.generateConfigFile(fileName);
+            return new PropertiesFile(fileName);
         }
 
-        if (fileType.equals(FILE_YML)) {
-            return null;
-        }
-
-        throw new ConfigFileException("unsupported configuration file " + fileName);
+        throw new ConfigFileException("unsupported configuration file");
 
     }
 
