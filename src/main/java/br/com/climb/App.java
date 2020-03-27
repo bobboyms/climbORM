@@ -12,6 +12,5 @@ public class App {
     public static void main(String[] args) {
         ManagerFactory managerFactory = ClimbORM.createManagerFactory("climb.properties");
         ClimbConnection connection = managerFactory.getConnection();
-
     }
 }

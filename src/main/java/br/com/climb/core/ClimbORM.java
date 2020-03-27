@@ -7,9 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 public class ClimbORM {
 
@@ -26,7 +23,7 @@ public class ClimbORM {
             managerFactory = new Manager(new FactoryConfigFile().getConfigFile(fileName));
 
         } catch (ConfigFileException | IOException e) {
-            logger.error("ERROR: {}", e.getMessage());
+            logger.error("context", e);
         }
 
         return managerFactory;

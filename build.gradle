@@ -32,10 +32,17 @@ dependencies {
 
     testCompile 'org.hamcrest:hamcrest-library:2.1'
 
+    compile group: 'org.apache.logging.log4j', name: 'log4j', version: '2.13.1'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.1'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.13.1'
+
+
     // https://mvnrepository.com/artifact/org.postgresql/postgresql
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.11'
+
+    //JDBC Connection pool
+    compile 'com.zaxxer:HikariCP:3.4.2'
 
 
 }
