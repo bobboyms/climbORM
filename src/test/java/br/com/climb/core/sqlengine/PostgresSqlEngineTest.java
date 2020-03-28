@@ -1,5 +1,6 @@
 package br.com.climb.core.sqlengine;
 
+import br.com.climb.core.PersistentEntity;
 import br.com.climb.core.sqlengine.interfaces.SqlEngine;
 import br.com.climb.modelbean.ModelTableField;
 import br.com.climb.test.model.Pessoa;

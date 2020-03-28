@@ -3,7 +3,7 @@ package br.com.climb.core;
 import br.com.climb.configfile.interfaces.ConfigFile;
 import br.com.climb.core.interfaces.ClimbConnection;
 import br.com.climb.core.interfaces.ManagerFactory;
-import br.com.climb.core.sgdb.PostgresConnection;
+import br.com.climb.core.sgdbconnection.PostgresConnection;
 
 public class Manager implements ManagerFactory {
 

@@ -2,9 +2,12 @@ package br.com.climb.utils;
 
 import br.com.climb.core.mapping.Json;
 import br.com.climb.modelbean.ModelTableField;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
@@ -24,31 +27,11 @@ public class SqlUtil {
         return null;
     }
 
-    public synchronized static PreparedStatement preparedStatementInsert(String schema, Connection connection, List<ModelTableField> modelTableFields,
-                                                            String tableName) throws Exception {
+    public synchronized static PreparedStatement preparedStatementInsert(Connection connection, List<ModelTableField> modelTableFields,
+                                                            String sql) throws SQLException, InvocationTargetException, IntrospectionException, IllegalAccessException, JsonProcessingException {
 
-        StringBuilder atributes = new StringBuilder();
-        StringBuilder values = new StringBuilder();
-
-        for (ModelTableField modelTableField : modelTableFields) {
-            atributes.append(modelTableField.getAttribute() + ",");
-            if (modelTableField.getField().isAnnotationPresent(Json.class)) {
-                Json json = modelTableField.getField().getAnnotation(Json.class);
-                values.append("?::"+json.typeJson()+",");
-            } else {
-                values.append("?,");
-            }
-        }
-
-        String sql = "INSERT INTO " + schema + "." + tableName + "("
-                + atributes.toString().substring(0, atributes.toString().length() - 1) + ") VALUES ("
-                + values.toString().substring(0, values.toString().length() -1) + ") RETURNING ID";
-
-        System.out.println(sql);
-
-        PreparedStatement ps = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-
-        return getPreparedStatement(ps, modelTableFields);
+        PreparedStatement preparedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+        return getPreparedStatement(preparedStatement, modelTableFields);
 
     }
 
@@ -91,7 +74,7 @@ public class SqlUtil {
         return ps;
     }
 
-    public synchronized static PreparedStatement getPreparedStatement(PreparedStatement ps, List<ModelTableField> modelTableFields) throws Exception {
+    public synchronized static PreparedStatement getPreparedStatement(PreparedStatement ps, List<ModelTableField> modelTableFields) throws IntrospectionException, SQLException, JsonProcessingException, InvocationTargetException, IllegalAccessException {
 
         int i = 0;
         for (ModelTableField modelTableField : modelTableFields) {
