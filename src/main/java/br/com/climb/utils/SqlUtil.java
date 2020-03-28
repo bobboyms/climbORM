@@ -27,8 +27,8 @@ public class SqlUtil {
         return null;
     }
 
-    public synchronized static PreparedStatement preparedStatementInsert(Connection connection, List<ModelTableField> modelTableFields,
-                                                            String sql) throws SQLException, InvocationTargetException, IntrospectionException, IllegalAccessException, JsonProcessingException {
+    public synchronized static PreparedStatement preparedStatementInsertUpdate(Connection connection, List<ModelTableField> modelTableFields,
+                                                                               String sql) throws SQLException, InvocationTargetException, IntrospectionException, IllegalAccessException, JsonProcessingException {
 
         PreparedStatement preparedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
         return getPreparedStatement(preparedStatement, modelTableFields);
@@ -229,30 +229,6 @@ public class SqlUtil {
         return null;
     }
 
-    public synchronized static PreparedStatement preparedStatementUpdate(String schema, Connection connection, List<ModelTableField> modelTableFields,
-                                                            String tableName, Long id) throws Exception {
-
-        StringBuilder values = new StringBuilder();
-        for (ModelTableField modelTableField : modelTableFields) {
-
-            if (modelTableField.getField().isAnnotationPresent(Json.class)) {
-                values.append(modelTableField.getAttribute() + "= ?::JSON,");
-            } else {
-                values.append(modelTableField.getAttribute() + "= ?,");
-            }
-
-        }
-
-        String sql = "UPDATE " + schema + "." + tableName + " SET " + values.toString().substring(0, values.toString().length() -1) + " " +
-                "WHERE id = " + id.toString();
-
-        System.out.println(sql);
-
-        PreparedStatement ps = connection.prepareStatement(sql);
-
-        return getPreparedStatement(ps, modelTableFields);
-
-    }
 
     public static synchronized boolean isTableExist(Connection connection, String schema, String table) {
 
