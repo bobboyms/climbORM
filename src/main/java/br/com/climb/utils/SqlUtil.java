@@ -15,13 +15,14 @@ import java.util.Map;
 
 public class SqlUtil {
 
-    public synchronized static byte[] getBinaryValue(Long id, String field, String entity, Connection connection)
-            throws SQLException {
-        Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 1);
-        ResultSet resultSet = stmt.executeQuery("SELECT " + field + " FROM " + entity + " WHERE ID = " + id.toString());
+    public synchronized static byte[] getBinaryValue(Connection connection, String sql, String field) throws SQLException {
 
-        while (resultSet.next()) {
-            return resultSet.getBytes(field);
+        try (Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 1)) {
+            try(ResultSet resultSet = stmt.executeQuery(sql)) {
+                while (resultSet.next()) {
+                    return resultSet.getBytes(field);
+                }
+            }
         }
 
         return null;

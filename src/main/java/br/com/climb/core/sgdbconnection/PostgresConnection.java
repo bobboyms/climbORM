@@ -1,6 +1,7 @@
 package br.com.climb.core.sgdbconnection;
 
 import br.com.climb.configfile.interfaces.ConfigFile;
+import br.com.climb.core.LazyLoader;
 import br.com.climb.core.PersistentEntity;
 import br.com.climb.core.TransactionDB;
 import br.com.climb.core.interfaces.ClimbConnection;
@@ -110,5 +111,20 @@ public class PostgresConnection implements ClimbConnection {
     @Override
     public Transaction getTransaction() {
         return transaction;
+    }
+
+    @Override
+    public Object findOne(Class classe, Long id) {
+
+        try {
+
+            final SqlEngine sqlEngine = generateSqlEngine(configFile);
+            return new LazyLoader(connection, sqlEngine).loadLazyObject(classe, id);
+
+        } catch (Exception e) {
+            logger.error("context", e);
+        }
+
+        return null;
     }
 }

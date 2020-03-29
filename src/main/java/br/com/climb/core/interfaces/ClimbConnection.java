@@ -7,4 +7,7 @@ public interface ClimbConnection {
 
     void close();
     Transaction getTransaction();
+
+    Object findOne(Class classe, Long id);
+
 }

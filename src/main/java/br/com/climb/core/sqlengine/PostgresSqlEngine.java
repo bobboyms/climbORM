@@ -1,14 +1,21 @@
 package br.com.climb.core.sqlengine;
 
 import br.com.climb.core.PersistentEntity;
+import br.com.climb.core.TransactionDB;
 import br.com.climb.core.mapping.Json;
 import br.com.climb.core.sqlengine.interfaces.SqlEngine;
 import br.com.climb.modelbean.ModelTableField;
-import static br.com.climb.utils.ReflectionUtil.getTableName;
+import org.apache.logging.log4j.Logger;
 
+import static br.com.climb.utils.ReflectionUtil.getTableName;
+import static org.apache.logging.log4j.LogManager.getLogger;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-public class PostgresSqlEngine implements SqlEngine {
+public class PostgresSqlEngine extends ModelEngine implements SqlEngine {
+
+    private static final Logger logger = getLogger(PostgresSqlEngine.class);
 
     private List<ModelTableField> modelTableFields;
     private Object entity;
@@ -19,7 +26,8 @@ public class PostgresSqlEngine implements SqlEngine {
         this.entity = entity;
     }
 
-    private PostgresSqlEngine(){}
+    public PostgresSqlEngine() {}
+
 
     @Override
     public String generateInsert() {
@@ -43,6 +51,7 @@ public class PostgresSqlEngine implements SqlEngine {
                 + attributes.toString().substring(0, attributes.toString().length() - 1) + ") VALUES ("
                 + values.toString().substring(0, values.toString().length() -1) + ") RETURNING ID";
 
+        logger.info("SQL-POSTGRES: ", sql);
         return sql;
     }
 
@@ -66,6 +75,8 @@ public class PostgresSqlEngine implements SqlEngine {
                 "" + values.toString().substring(0, values.toString().length() -1) + " " +
                 "" + "WHERE id = " + id.toString();
 
+        logger.info("SQL-POSTGRES: ", sql);
+
         return sql;
     }
 
@@ -73,13 +84,48 @@ public class PostgresSqlEngine implements SqlEngine {
     public String generateDelete() {
         final String tableName = getTableName(entity);
         final Long id = ((PersistentEntity)entity).getId();
-        return "DELETE FROM " + schema + "." + tableName + " WHERE id = " + id.toString();
+        final String sql = "DELETE FROM " + schema + "." + tableName + " WHERE id = " + id.toString();
+
+        logger.info("SQL-POSTGRES: ", sql);
+
+        return sql;
     }
 
     @Override
     public String generateDelete(String where) {
         final String tableName = getTableName(entity);
         final Long id = ((PersistentEntity)entity).getId();
-        return "DELETE FROM " + schema + "." + tableName + " " + where;
+        final String sql = "DELETE FROM " + schema + "." + tableName + " " + where;
+
+        logger.info("SQL-POSTGRES: ", sql);
+
+        return sql;
     }
+
+    @Override
+    public String generateSelectOne(Class classe, Long id) throws Exception {
+
+        final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());
+        final var attributes = getAttributes(classe);
+
+        final String sql = "SELECT id," + attributes.toString().substring(0, attributes.toString().length() - 1) + " FROM " +
+                this.schema + "."+ tableName + " WHERE ID="+id.toString();
+
+        logger.info("SQL-POSTGRES: ", sql);
+
+        return sql;
+
+    }
+
+    public String generateSelectOneAtt(Long id, String field, String entity) {
+
+        final String sql = "SELECT " + field + " FROM " + entity + " WHERE ID = " + id.toString();
+
+        logger.info("SQL-POSTGRES: ", sql);
+
+        return sql;
+
+    }
+
+
 }

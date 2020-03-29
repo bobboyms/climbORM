@@ -8,5 +8,7 @@ public interface SqlEngine {
     String generateUpdate();
     String generateDelete();
     String generateDelete(String where);
+    String generateSelectOne(Class classe, Long id) throws Exception;
+    String generateSelectOneAtt(Long id, String field, String entity);
 
 }

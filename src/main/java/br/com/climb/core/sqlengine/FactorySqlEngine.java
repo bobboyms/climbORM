@@ -23,5 +23,15 @@ public class FactorySqlEngine {
 
     }
 
+    public static SqlEngine generateSqlEngine(ConfigFile configFile) throws SgdbException {
+
+        if (configFile.getDriver().equals(POSTGRES)) {
+            return new PostgresSqlEngine();
+        }
+
+        throw new SgdbException("unsupported database");
+
+    }
+
 
 }
