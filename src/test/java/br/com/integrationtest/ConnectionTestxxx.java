@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ConnectionTest {
+public class ConnectionTestxxx {
 
     public static Long idPessoa;
     public static Long idCidade;
