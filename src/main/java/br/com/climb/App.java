@@ -3,19 +3,14 @@
  */
 package br.com.climb;
 
-import java.util.Arrays;
-import java.util.List;
+import br.com.climb.core.ClimbORM;
+import br.com.climb.core.interfaces.ClimbConnection;
+import br.com.climb.core.interfaces.ManagerFactory;
 
 public class App {
-    public String getGreeting() {
-        return "Hello world.";
-    }
 
     public static void main(String[] args) {
-        List<String> lista = Arrays.asList("a","b");
-
-        lista.parallelStream().forEach(System.out::println);
-
-        System.out.println(new App().getGreeting());
+        ManagerFactory managerFactory = ClimbORM.createManagerFactory("climb.properties");
+        ClimbConnection connection = managerFactory.getConnection();
     }
 }
