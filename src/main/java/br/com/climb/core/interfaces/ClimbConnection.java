@@ -4,6 +4,7 @@ public interface ClimbConnection {
     void save(Object object);
     void update(Object object);
     void delete(Object object);
+    void delete(Class object, String where);
 
     void close();
     Transaction getTransaction();

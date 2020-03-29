@@ -28,13 +28,18 @@ public class PostgresConnection implements ClimbConnection {
     private static final Logger logger = getLogger(PostgresConnection.class);
 
     private Connection connection;
-    private ConfigFile configFile;
     private Transaction transaction;
+    private SqlEngine sqlEngine;
 
     public PostgresConnection(ConfigFile configFile) {
-        this.configFile = configFile;
-        this.connection = createJdbcConnection(configFile);
-        this.transaction = new TransactionDB(connection);
+
+        try {
+            this.connection = createJdbcConnection(configFile);
+            this.transaction = new TransactionDB(connection);
+            this.sqlEngine = generateSqlEngine(configFile);
+        } catch (Exception e) {
+            logger.error("context", e);
+        }
     }
 
     @Override
@@ -43,9 +48,8 @@ public class PostgresConnection implements ClimbConnection {
         try {
 
             final List<ModelTableField> modelTableFields = generateModel(object);
-            final SqlEngine sqlEngine = generateSqlEngine(configFile, modelTableFields, object);
 
-            try (PreparedStatement preparedStatement = preparedStatementInsertUpdate(connection, modelTableFields, sqlEngine.generateInsert())){
+            try (PreparedStatement preparedStatement = preparedStatementInsertUpdate(connection, modelTableFields, sqlEngine.generateInsert(modelTableFields, object))){
 
                 preparedStatement.executeUpdate();
 
@@ -70,9 +74,8 @@ public class PostgresConnection implements ClimbConnection {
         try {
 
             final List<ModelTableField> modelTableFields = generateModel(object);
-            final SqlEngine sqlEngine = generateSqlEngine(configFile, modelTableFields, object);
 
-            try(PreparedStatement preparedStatement = preparedStatementInsertUpdate(connection, modelTableFields, sqlEngine.generateUpdate())) {
+            try(PreparedStatement preparedStatement = preparedStatementInsertUpdate(connection, modelTableFields, sqlEngine.generateUpdate(modelTableFields, object))) {
                 preparedStatement.executeUpdate();
             }
 
@@ -87,18 +90,28 @@ public class PostgresConnection implements ClimbConnection {
         try {
 
             final List<ModelTableField> modelTableFields = generateModel(object);
-            final SqlEngine sqlEngine = generateSqlEngine(configFile, modelTableFields, object);
 
             try (Statement stmt = connection.createStatement()) {
-                stmt.execute(sqlEngine.generateDelete());
+                stmt.execute(sqlEngine.generateDelete(object));
                 ((PersistentEntity)object).setId(null);
             }
 
         } catch (Exception e) {
             logger.error("context", e);
         }
+    }
 
+    @Override
+    public void delete(Class object, String where) {
+        try {
 
+            try (Statement stmt = connection.createStatement()) {
+                stmt.execute(sqlEngine.generateDelete(object, where));
+            }
+
+        } catch (Exception e) {
+            logger.error("context", e);
+        }
     }
 
     @Override
@@ -120,7 +133,6 @@ public class PostgresConnection implements ClimbConnection {
 
         try {
 
-            final SqlEngine sqlEngine = generateSqlEngine(configFile);
             return new LazyLoader(connection, sqlEngine).loadLazyObject(classe, id);
 
         } catch (Exception e) {
@@ -134,7 +146,6 @@ public class PostgresConnection implements ClimbConnection {
     public ResultIterator find(Class classe, String where) {
         try {
 
-            final SqlEngine sqlEngine = generateSqlEngine(configFile);
             return new LazyLoader(connection, sqlEngine, classe).findWithWhereQueryExecute(sqlEngine.generateSelectMany(classe,where));
 
         } catch (Exception e) {
@@ -148,7 +159,6 @@ public class PostgresConnection implements ClimbConnection {
     public ResultIterator findWithQuery(Class classe, String sql) {
         try {
 
-            final SqlEngine sqlEngine = generateSqlEngine(configFile);
             return new LazyLoader(connection, sqlEngine, classe).findWithQueryExecute(sql);
 
         } catch (Exception e) {

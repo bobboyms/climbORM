@@ -17,20 +17,12 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine {
 
     private static final Logger logger = getLogger(PostgresSqlEngine.class);
 
-    private List<ModelTableField> modelTableFields;
-    private Object entity;
     private String schema = "public";
-
-    public PostgresSqlEngine(List<ModelTableField> modelTableFields, Object entity) {
-        this.modelTableFields = modelTableFields;
-        this.entity = entity;
-    }
 
     public PostgresSqlEngine() {}
 
-
     @Override
-    public String generateInsert() {
+    public String generateInsert(List<ModelTableField> modelTableFields, Object entity) {
 
         final var attributes = new StringBuilder();
         final var values = new StringBuilder();
@@ -56,7 +48,7 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine {
     }
 
     @Override
-    public String generateUpdate() {
+    public String generateUpdate(List<ModelTableField> modelTableFields, Object entity) {
 
         final var values = new StringBuilder();
 
@@ -81,7 +73,8 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine {
     }
 
     @Override
-    public String generateDelete() {
+    public String generateDelete(Object entity) {
+
         final String tableName = getTableName(entity);
         final Long id = ((PersistentEntity)entity).getId();
         final String sql = "DELETE FROM " + schema + "." + tableName + " WHERE id = " + id.toString();
@@ -92,9 +85,8 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine {
     }
 
     @Override
-    public String generateDelete(String where) {
-        final String tableName = getTableName(entity);
-        final Long id = ((PersistentEntity)entity).getId();
+    public String generateDelete(Class classe, String where) throws Exception {
+        final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());
         final String sql = "DELETE FROM " + schema + "." + tableName + " " + where;
 
         logger.info("SQL-POSTGRES: ", sql);

@@ -95,6 +95,9 @@ public class ReflectionUtil {
 		Object tempValue = null;
 
 		try {
+//
+//			System.out.println(object.getClass());
+//			System.out.println("Field: " + field.getName());
 
 			Object value = new PropertyDescriptor(field.getName(), object.getClass()).getReadMethod().invoke(object);
 

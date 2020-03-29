@@ -13,16 +13,6 @@ public class FactorySqlEngine {
 
     private FactorySqlEngine(){}
 
-    public static SqlEngine generateSqlEngine(ConfigFile configFile, List<ModelTableField> modelTableFields, Object entity) throws SgdbException {
-
-        if (configFile.getDriver().equals(POSTGRES)) {
-            return new PostgresSqlEngine(modelTableFields, entity);
-        }
-
-        throw new SgdbException("unsupported database");
-
-    }
-
     public static SqlEngine generateSqlEngine(ConfigFile configFile) throws SgdbException {
 
         if (configFile.getDriver().equals(POSTGRES)) {

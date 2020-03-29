@@ -19,13 +19,13 @@ public class PostgresSqlEngineTest {
 
         Pessoa pessoa = new Pessoa();
         List<ModelTableField> modelTableFields = ReflectionUtil.generateModel(pessoa);
-        SqlEngine sqlEngine = new PostgresSqlEngine(modelTableFields, pessoa);
+        SqlEngine sqlEngine = new PostgresSqlEngine();
 
         final String expected = "INSERT INTO public.tb_pessoa(nome,endereco_comercial," +
                 "idade,altura,quantidade_quilos,casado," +
                 "id_endereco,foto,lista_emails) VALUES (?,?,?,?,?,?,?,?,?::JSON) RETURNING ID";
 
-        assertThat(expected, is(sqlEngine.generateInsert()));
+        assertThat(expected, is(sqlEngine.generateInsert(modelTableFields, pessoa)));
 
     }
 
@@ -35,15 +35,13 @@ public class PostgresSqlEngineTest {
         Pessoa pessoa = new Pessoa();
         pessoa.setId(100l);
         List<ModelTableField> modelTableFields = ReflectionUtil.generateModel(pessoa);
-        SqlEngine sqlEngine = new PostgresSqlEngine(modelTableFields, pessoa);
-
-        System.out.println(sqlEngine.generateUpdate());
+        SqlEngine sqlEngine = new PostgresSqlEngine();
 
         final String expected = "UPDATE public.tb_pessoa SET nome= ?,endereco_comercial= ?," +
                 "idade= ?,altura= ?,quantidade_quilos= ?,casado= ?,id_endereco= ?,foto= ?," +
                 "lista_emails= ?::JSON WHERE id = 100";
 
-        assertThat(expected, is(sqlEngine.generateUpdate()));
+        assertThat(expected, is(sqlEngine.generateUpdate(modelTableFields, pessoa)));
 
     }
 
@@ -53,25 +51,25 @@ public class PostgresSqlEngineTest {
         Pessoa pessoa = new Pessoa();
         pessoa.setId(100l);
         List<ModelTableField> modelTableFields = ReflectionUtil.generateModel(pessoa);
-        SqlEngine sqlEngine = new PostgresSqlEngine(modelTableFields, pessoa);
+        SqlEngine sqlEngine = new PostgresSqlEngine();
 
         final String expected = "DELETE FROM public.tb_pessoa WHERE id = 100";
 
-        assertThat(expected, is(sqlEngine.generateDelete()));
+        assertThat(expected, is(sqlEngine.generateDelete(pessoa)));
 
     }
 
     @Test
-    public void test_generateDeleteWhere() {
+    public void test_generateDeleteWhere() throws Exception {
 
         Pessoa pessoa = new Pessoa();
         pessoa.setId(100l);
         List<ModelTableField> modelTableFields = ReflectionUtil.generateModel(pessoa);
-        SqlEngine sqlEngine = new PostgresSqlEngine(modelTableFields, pessoa);
+        SqlEngine sqlEngine = new PostgresSqlEngine();
 
         final String expected = "DELETE FROM public.tb_pessoa WHERE id = 100";
 
-        assertThat(expected, is(sqlEngine.generateDelete("WHERE id = 100")));
+        assertThat(expected, is(sqlEngine.generateDelete(Pessoa.class, "WHERE id = 100")));
 
     }
 
