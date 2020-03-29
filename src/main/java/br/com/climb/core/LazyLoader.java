@@ -1,10 +1,7 @@
 package br.com.climb.core;
 
 import br.com.climb.core.interfaces.ResultIterator;
-import br.com.climb.core.mapping.Entity;
-import br.com.climb.core.mapping.Json;
-import br.com.climb.core.mapping.Relation;
-import br.com.climb.core.mapping.Transient;
+import br.com.climb.core.mapping.*;
 import br.com.climb.core.sqlengine.interfaces.SqlEngine;
 import br.com.climb.exception.LoadLazyObjectException;
 import br.com.climb.utils.ReflectionUtil;
@@ -43,20 +40,26 @@ public class LazyLoader implements ResultIterator {
         this.sqlEngine = sqlEngine;
     }
 
+    public LazyLoader(Connection connection, SqlEngine sqlEngine, Class classe) throws LoadLazyObjectException {
+        this.connection = connection;
+        this.sqlEngine = sqlEngine;
+        this.classe = classe;
+    }
+
 //    public LazyLoader(Connection connection, FieldsManager fieldsManager, String schema, Class classe, String sql, String typeQuery) {
 //        this.connection = connection;
 //        this.schema = schema;
 //        this.sql = sql;
 //        this.classe = classe;
 //        this.fieldsManager = fieldsManager;
-//
-//        if (typeQuery.equals(QUERY_RESULT)) {
-//            findWithQueryExecute();
-//        } else if (typeQuery.equals(ENTITY)) {
-//            findWithWhereQueryExecute();
-//        } else {
-//            throw new Error("Invalid typeQuery : " + typeQuery);
-//        }
+////
+////        if (typeQuery.equals(QUERY_RESULT)) {
+////            findWithQueryExecute();
+////        } else if (typeQuery.equals(ENTITY)) {
+////            findWithWhereQueryExecute();
+////        } else {
+////            throw new Error("Invalid typeQuery : " + typeQuery);
+////        }
 //
 //    }
 
@@ -76,12 +79,9 @@ public class LazyLoader implements ResultIterator {
                 Field[] fields = object.getClass().getSuperclass().getDeclaredFields();
                 loadObject(fields, object, resultSet);
 
-                //se existir campos dinamicos
-//                if (ReflectionUtil.isContainsDynamicFields(this.object)) {
-//                    this.fieldsManager.findOne(this.object);
-//                }
-
                 return true;
+            } else {
+                resultSet.close();
             }
         } catch(Exception e) {
             e.printStackTrace();;
@@ -91,54 +91,44 @@ public class LazyLoader implements ResultIterator {
     }
 
 
-//    private void findWithQueryExecute() {
-//
-//        final QueryResult QueryResult = (QueryResult) classe.getAnnotation(QueryResult.class);
-//
-//        if (QueryResult == null) {
-//            throw new Error(classe.getName() + " not is QueryResult");
-//        }
-//
-//        System.out.println(sql);
-//
-//        try {
-//
-//            Statement stmt = this.connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 1);
-//            this.resultSet = stmt.executeQuery(sql);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
+    public LazyLoader findWithQueryExecute(String sql) throws LoadLazyObjectException {
 
-//    private void findWithWhereQueryExecute() {
-//
-//        final Entity entity = (Entity) this.classe.getAnnotation(Entity.class);
-//
-//        if (entity == null) {
-//            throw new Error(this.classe.getName() + " not is Entity");
-//        }
-//
-//        final StringBuilder atributes = getAtributes(this.classe);
-//
-//        final String sql = "SELECT id," + atributes.toString().substring(0, atributes.toString().length() - 1) + " FROM "
-//                + entity.name() + " " + this.sql;
-//
-//        System.out.println(sql);
-//
-//        ArrayList objects = null;
-//
-//        try {
-//
-//            Statement stmt = this.connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 1);
-//            this.resultSet = stmt.executeQuery(sql);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
+        final QueryResult QueryResult = (QueryResult) classe.getAnnotation(QueryResult.class);
+
+        if (QueryResult == null) {
+            throw new LoadLazyObjectException(classe.getName() + " not is QueryResult");
+        }
+
+        try {
+
+            Statement stmt = this.connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 1);
+            resultSet = stmt.executeQuery(sql);
+
+            return this;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public LazyLoader findWithWhereQueryExecute(String sql) throws LoadLazyObjectException {
+
+        try {
+
+            Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 1);
+            resultSet = stmt.executeQuery(sql);
+
+            return this;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
 
     public Object loadLazyObject(Class classe, Long id) throws Exception {
 

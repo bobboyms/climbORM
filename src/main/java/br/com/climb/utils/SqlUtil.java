@@ -43,10 +43,6 @@ public class SqlUtil {
         for (String fieldName : fields.keySet()) {
             System.out.println("Nome: " + fieldName);
             Object object = fields.get(fieldName);
-//
-//            if (object == null) {
-//                continue;
-//            }
 
             i += 1;
 

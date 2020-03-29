@@ -103,6 +103,21 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine {
     }
 
     @Override
+    public String generateSelectMany(Class classe, String where) throws Exception {
+
+        final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());
+        final var attributes = getAttributes(classe);
+
+        final String sql = "SELECT id," + attributes.toString().substring(0, attributes.toString().length() - 1) + " FROM "
+                + tableName + " " + where;
+
+        logger.info("SQL-POSTGRES: ", sql);
+
+        return sql;
+
+    }
+
+    @Override
     public String generateSelectOne(Class classe, Long id) throws Exception {
 
         final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());
@@ -126,6 +141,10 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine {
         return sql;
 
     }
+
+
+
+
 
 
 }

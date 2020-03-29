@@ -9,5 +9,7 @@ public interface ClimbConnection {
     Transaction getTransaction();
 
     Object findOne(Class classe, Long id);
+    ResultIterator find(Class classe, String where);
+    ResultIterator findWithQuery(Class classe, String sql);
 
 }

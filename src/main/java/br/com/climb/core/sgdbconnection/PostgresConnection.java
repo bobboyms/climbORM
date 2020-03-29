@@ -6,6 +6,7 @@ import br.com.climb.core.PersistentEntity;
 import br.com.climb.core.TransactionDB;
 import br.com.climb.core.interfaces.ClimbConnection;
 
+import br.com.climb.core.interfaces.ResultIterator;
 import br.com.climb.core.interfaces.Transaction;
 import br.com.climb.core.sqlengine.interfaces.SqlEngine;
 import br.com.climb.exception.SgdbException;
@@ -97,6 +98,7 @@ public class PostgresConnection implements ClimbConnection {
             logger.error("context", e);
         }
 
+
     }
 
     @Override
@@ -120,6 +122,34 @@ public class PostgresConnection implements ClimbConnection {
 
             final SqlEngine sqlEngine = generateSqlEngine(configFile);
             return new LazyLoader(connection, sqlEngine).loadLazyObject(classe, id);
+
+        } catch (Exception e) {
+            logger.error("context", e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public ResultIterator find(Class classe, String where) {
+        try {
+
+            final SqlEngine sqlEngine = generateSqlEngine(configFile);
+            return new LazyLoader(connection, sqlEngine, classe).findWithWhereQueryExecute(sqlEngine.generateSelectMany(classe,where));
+
+        } catch (Exception e) {
+            logger.error("context", e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public ResultIterator findWithQuery(Class classe, String sql) {
+        try {
+
+            final SqlEngine sqlEngine = generateSqlEngine(configFile);
+            return new LazyLoader(connection, sqlEngine, classe).findWithQueryExecute(sql);
 
         } catch (Exception e) {
             logger.error("context", e);

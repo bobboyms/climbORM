@@ -3,6 +3,7 @@ package br.com.integrationtest;
 import br.com.climb.core.ClimbORM;
 import br.com.climb.core.interfaces.ClimbConnection;
 import br.com.climb.core.interfaces.ManagerFactory;
+import br.com.climb.core.interfaces.ResultIterator;
 import br.com.climb.test.model.Cidade;
 import br.com.climb.test.model.Email;
 import br.com.climb.test.model.Endereco;
@@ -110,22 +111,24 @@ public class ConnectionTest {
 
         connection.close();
 
-//        connection = factory.getConnection("localhost");
-//        ResultIterator iterator = connection.find(Pessoa.class, "where id = " + idPessoa.toString());
-//
-//        assertTrue(iterator != null);
-//
-//        while (iterator.next()) {
-//            Pessoa pessoa1 = (Pessoa) iterator.getObject();
-//
-//            assertTrue(pessoa1 != null);
-//            assertTrue(pessoa1.getEmails().size() > 0);
-//            assertTrue(pessoa1.getId() != null);
-//            assertTrue(pessoa1.getEndereco() != null);
-//            assertTrue(pessoa1.getEndereco().getId() != null);
-//            assertTrue(pessoa1.getEndereco().getCidade() != null);
-//            assertTrue(pessoa1.getEndereco().getCidade().getId() != null);
-//        }
+        connection = managerFactory.getConnection();
+        ResultIterator iterator = connection.find(Pessoa.class, "where id = " + idPessoa.toString());
+
+        assertTrue(iterator != null);
+
+        while (iterator.next()) {
+            Pessoa pessoa1 = (Pessoa) iterator.getObject();
+
+            System.out.println("Iterator: " + pessoa1.getNome());
+
+            assertTrue(pessoa1 != null);
+            assertTrue(pessoa1.getEmails().size() > 0);
+            assertTrue(pessoa1.getId() != null);
+            assertTrue(pessoa1.getEndereco() != null);
+            assertTrue(pessoa1.getEndereco().getId() != null);
+            assertTrue(pessoa1.getEndereco().getCidade() != null);
+            assertTrue(pessoa1.getEndereco().getCidade().getId() != null);
+        }
 //
 //        ResultIterator resultIterator = connection.findWithQuery(RespostaQuery.class, "SELECT " +
 //                "p.nome, e.nome_da_rua, p.id_endereco, c.nome_da_cidade, p.lista_emails " +

@@ -47,6 +47,7 @@ public class FactoryJdbcConnection {
             }
 
             connection = hikariDataSource.getConnection();
+
         } catch (SQLException | SgdbException e) {
             logger.error("context", e);
         }
