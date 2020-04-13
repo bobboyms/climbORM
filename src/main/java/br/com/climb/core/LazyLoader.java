@@ -1,9 +1,13 @@
 package br.com.climb.core;
 
+import br.com.climb.configfile.FactoryConfigFile;
 import br.com.climb.core.interfaces.ResultIterator;
 import br.com.climb.core.mapping.*;
 import br.com.climb.core.sqlengine.interfaces.SqlEngine;
 import br.com.climb.exception.LoadLazyObjectException;
+import br.com.climb.systemcache.CacheManager;
+import br.com.climb.systemcache.CacheManagerImp;
+import br.com.climb.systemcache.model.CommandDTO;
 import br.com.climb.utils.ReflectionUtil;
 import br.com.climb.utils.SqlUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,14 +28,10 @@ import java.util.List;
 
 public class LazyLoader implements ResultIterator {
 
-    public final static String QUERY_RESULT = "QueryResult";
-    public final static String ENTITY = "Entity";
-
     private Connection connection;
     private String schema;
     private Class classe;
     private ResultSet resultSet;
-    private String sql;
     private Object object;
     private SqlEngine sqlEngine;
 
@@ -132,13 +132,18 @@ public class LazyLoader implements ResultIterator {
 
     public Object loadLazyObject(Class classe, Long id) throws Exception {
 
+        CacheManager cacheManager = CacheManagerImp.build(FactoryConfigFile.getConfigFile());
+        Object object = cacheManager.getValueCache(classe, id);
+
+        if (object != null) {
+            return object;
+        }
+
         final Entity entity = (Entity) classe.getAnnotation(Entity.class);
 
         if (entity == null) {
             throw new LoadLazyObjectException(classe.getName() + " not is Entity");
         }
-
-        Object object = null;
 
         try(Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 1)) {
             try (ResultSet resultSet = statement.executeQuery(sqlEngine.generateSelectOne(classe, id))) {
@@ -157,8 +162,6 @@ public class LazyLoader implements ResultIterator {
 
         return object;
     }
-
-
 
     private Enhancer newEnhancer(Class classe) {
 
@@ -228,7 +231,7 @@ public class LazyLoader implements ResultIterator {
 
                 try {
 
-                    Object instance = Class.forName(field.getGenericType().getTypeName()).newInstance();
+                    Object instance = Class.forName(field.getGenericType().getTypeName()).getConstructor().newInstance();
 
                     String fieldName = ReflectionUtil.getFieldName(field);
                     Long value = resultSet.getLong(fieldName);
@@ -236,7 +239,7 @@ public class LazyLoader implements ResultIterator {
                     PersistentEntity persistentEntity = (PersistentEntity) instance;
                     persistentEntity.setId(value);
 
-                    Object rs = new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
+                    new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
                             .invoke(object, instance);
 
                 } catch (Exception e) {
@@ -259,7 +262,7 @@ public class LazyLoader implements ResultIterator {
 
                     String fieldName = ReflectionUtil.getFieldName(field);
                     Long value = resultSet.getLong(fieldName);
-                    Object rs = new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
+                    new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
                             .invoke(object, value);
 
                 } catch (Exception e) {
@@ -271,7 +274,7 @@ public class LazyLoader implements ResultIterator {
 
                     String fieldName = ReflectionUtil.getFieldName(field);
                     Integer value = resultSet.getInt(fieldName);
-                    Object rs = new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
+                    new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
                             .invoke(object, value);
 
                 } catch (Exception e) {
@@ -282,7 +285,7 @@ public class LazyLoader implements ResultIterator {
 
                     String fieldName = ReflectionUtil.getFieldName(field);
                     Float value = resultSet.getFloat(fieldName);
-                    Object rs = new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
+                    new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
                             .invoke(object, value);
 
                 } catch (Exception e) {
@@ -294,7 +297,7 @@ public class LazyLoader implements ResultIterator {
 
                     String fieldName = ReflectionUtil.getFieldName(field);
                     Double value = resultSet.getDouble(fieldName);
-                    Object rs = new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
+                    new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
                             .invoke(object, value);
 
                 } catch (Exception e) {
@@ -308,7 +311,7 @@ public class LazyLoader implements ResultIterator {
 
                         String fieldName = ReflectionUtil.getFieldName(field);
                         Boolean value = resultSet.getBoolean(fieldName);
-                        Object rs = new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
+                        new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
                                 .invoke(object, value);
 
                     } catch (Exception e) {
@@ -325,7 +328,7 @@ public class LazyLoader implements ResultIterator {
 
                         String fieldName = ReflectionUtil.getFieldName(field);
                         String value = resultSet.getString(fieldName);
-                        Object rs = new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
+                        new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
                                 .invoke(object, value);
 
                     } catch (Exception e) {
@@ -342,7 +345,7 @@ public class LazyLoader implements ResultIterator {
 
                         String fieldName = ReflectionUtil.getFieldName(field);
                         byte[] value = fieldName.getBytes();
-                        Object rs = new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
+                        new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
                                 .invoke(object, value);
 
                     } catch (Exception e) {
@@ -368,7 +371,7 @@ public class LazyLoader implements ResultIterator {
                             ArrayList value = mapper.readValue(json,
                                     mapper.getTypeFactory().constructCollectionType(List.class, jsonType));
 
-                            Object rs = new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
+                            new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
                                     .invoke(object, value);
                         }
 

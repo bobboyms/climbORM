@@ -10,6 +10,7 @@ import static br.com.climb.utils.Utils.isStringNullOrEmpty;
 public class FactoryConfigFile {
 
     private static final String FILE_PROPERTIES = "properties";
+    private static ConfigFile configFile;
 
     protected String getTypeFile(final String fileName) throws ConfigFileException {
 
@@ -29,12 +30,19 @@ public class FactoryConfigFile {
 
         final String fileType = getTypeFile(fileName);
 
+        configFile = null;
+
         if (fileType.equals(FILE_PROPERTIES)) {
-            return new PropertiesFile(fileName);
+            configFile =  new PropertiesFile(fileName);
+            return configFile;
         }
 
         throw new ConfigFileException("unsupported configuration file");
 
+    }
+
+    public static ConfigFile getConfigFile() {
+        return configFile;
     }
 
 }

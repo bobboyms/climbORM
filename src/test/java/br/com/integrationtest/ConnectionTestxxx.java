@@ -34,6 +34,7 @@ public class ConnectionTestxxx {
         managerFactory = ClimbORM.createManagerFactory("climb.properties");
         ClimbConnection connection = managerFactory.getConnection();
         assertTrue(connection != null);
+        System.out.println("Teste");
 
     }
 

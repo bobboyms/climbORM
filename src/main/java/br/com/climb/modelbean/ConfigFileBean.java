@@ -8,6 +8,7 @@ public abstract class ConfigFileBean {
     private String password;
     private String database;
     private boolean ssl = false;
+    private boolean cache = false;
 
     public String getDriver() {
         return driver;
@@ -65,4 +66,11 @@ public abstract class ConfigFileBean {
         this.ssl = ssl;
     }
 
+    public boolean isCache() {
+        return cache;
+    }
+
+    public void setCache(boolean cache) {
+        this.cache = cache;
+    }
 }

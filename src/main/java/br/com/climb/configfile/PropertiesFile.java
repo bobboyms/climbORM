@@ -34,6 +34,13 @@ public class PropertiesFile extends ConfigFileBean implements ConfigFile {
         super.setPassword(properties.getProperty("persistence.jdbc.password"));
         super.setDriver(properties.getProperty("persistence.jdbc.driver"));
         super.setPort(properties.getProperty("persistence.jdbc.port"));
+
+        Boolean cache = Boolean.valueOf(properties.getProperty("persistence.cache.speedup"));
+        if (cache) {
+            super.setCache(cache);
+        }
+
+
     }
 
     protected PropertiesFile(){}

@@ -1,13 +1,11 @@
 package br.com.climb.test.model;
 
 import br.com.climb.core.PersistentEntity;
-import br.com.climb.core.mapping.Column;
-import br.com.climb.core.mapping.Entity;
-import br.com.climb.core.mapping.Json;
-import br.com.climb.core.mapping.Relation;
+import br.com.climb.core.mapping.*;
 
 import java.util.List;
 
+//@Cachable
 @Entity(name = "tb_pessoa")
 public class Pessoa extends PersistentEntity {
 	

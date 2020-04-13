@@ -60,6 +60,15 @@ public class FactoryConfigFileTest {
     }
 
     @Test()
+    @DisplayName("verifica o retorno a exception \"the configuration file cannot be null or empty\" quando null")
+    public void test_getConfigFile22() throws ConfigFileException, IOException {
+        ConfigFile configFile = factoryConfigFile.getConfigFile("climb.properties");
+        assert configFile != null;
+        System.out.println(configFile.isCache());
+        assertThat(true, is(configFile.isCache()));
+    }
+
+    @Test()
     public void test_getConfigFile1() throws IOException {
         try {
             factoryConfigFile.getConfigFile("climbx.properties");

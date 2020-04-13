@@ -12,6 +12,8 @@ import br.com.climb.core.sqlengine.interfaces.SqlEngine;
 import br.com.climb.exception.SgdbException;
 import br.com.climb.modelbean.ModelTableField;
 
+import br.com.climb.systemcache.CacheManager;
+import br.com.climb.systemcache.CacheManagerImp;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
@@ -30,6 +32,7 @@ public class PostgresConnection implements ClimbConnection {
     private Connection connection;
     private Transaction transaction;
     private SqlEngine sqlEngine;
+    private CacheManager cacheManager;
 
     public PostgresConnection(ConfigFile configFile) {
 
@@ -37,6 +40,7 @@ public class PostgresConnection implements ClimbConnection {
             this.connection = createJdbcConnection(configFile);
             this.transaction = new TransactionDB(connection);
             this.sqlEngine = generateSqlEngine(configFile);
+            this.cacheManager = CacheManagerImp.build(configFile);
         } catch (Exception e) {
             logger.error("context", e);
         }
@@ -56,9 +60,8 @@ public class PostgresConnection implements ClimbConnection {
                 try (ResultSet rsID = preparedStatement.getGeneratedKeys()) {
 
                     if (rsID.next()) {
-                        Long id = rsID.getLong("id");
-                        PersistentEntity persistentEntity = (PersistentEntity) object;
-                        persistentEntity.setId(id);
+                        ((PersistentEntity)object).setId(rsID.getLong("id"));
+                        cacheManager.addToCache(object);
                     } else {
                         throw new SgdbException("FATAL ERROR: it was not possible to obtain the sequential code after the insert");
                     }
@@ -77,6 +80,7 @@ public class PostgresConnection implements ClimbConnection {
 
             try(PreparedStatement preparedStatement = preparedStatementInsertUpdate(connection, modelTableFields, sqlEngine.generateUpdate(modelTableFields, object))) {
                 preparedStatement.executeUpdate();
+                cacheManager.addToCache(object);
             }
 
         } catch (Exception e) {
