@@ -45,7 +45,8 @@ public class CacheManagerImp implements CacheManager {
     @Override
     public void addToCache(Object value) throws IOException {
 
-        if (!configFile.isCache() && (value.getClass().getAnnotation(Cachable.class) == null)) {
+        Cachable Cachable = value.getClass().getAnnotation(Cachable.class);
+        if (Cachable == null || !configFile.isCache()) {
             return;
         }
 
@@ -74,7 +75,8 @@ public class CacheManagerImp implements CacheManager {
     @Override
     public Object getValueCache(Class classe, Long id) throws Exception {
 
-        if (!configFile.isCache()) {
+        Cachable Cachable = (Cachable) classe.getAnnotation(Cachable.class);
+        if (Cachable == null || !configFile.isCache()) {
             return null;
         }
 

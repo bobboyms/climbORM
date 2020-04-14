@@ -4,6 +4,7 @@ import br.com.climb.configfile.interfaces.ConfigFile;
 import br.com.climb.core.interfaces.ClimbConnection;
 import br.com.climb.core.interfaces.ManagerFactory;
 import br.com.climb.core.sgdbconnection.PostgresConnection;
+import br.com.climb.core.sqlengine.interfaces.HasSchema;
 
 public class Manager implements ManagerFactory {
 
@@ -22,6 +23,18 @@ public class Manager implements ManagerFactory {
 
         if (configFile.getDriver().equals(POSTGRES)) {
             climbConnection = new PostgresConnection(configFile);
+        }
+
+        return climbConnection;
+    }
+
+    @Override
+    public ClimbConnection getConnection(String schemaName) {
+        ClimbConnection climbConnection = null;
+
+        if (configFile.getDriver().equals(POSTGRES)) {
+            climbConnection = new PostgresConnection(configFile);
+            ((HasSchema)climbConnection).setSchema(schemaName);
         }
 
         return climbConnection;

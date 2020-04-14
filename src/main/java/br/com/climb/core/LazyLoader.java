@@ -7,13 +7,13 @@ import br.com.climb.core.sqlengine.interfaces.SqlEngine;
 import br.com.climb.exception.LoadLazyObjectException;
 import br.com.climb.systemcache.CacheManager;
 import br.com.climb.systemcache.CacheManagerImp;
-import br.com.climb.systemcache.model.CommandDTO;
 import br.com.climb.utils.ReflectionUtil;
 import br.com.climb.utils.SqlUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.apache.logging.log4j.Logger;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -21,26 +21,28 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 public class LazyLoader implements ResultIterator {
 
     private Connection connection;
-    private String schema;
     private Class classe;
     private ResultSet resultSet;
     private Object object;
     private SqlEngine sqlEngine;
+
+    private static final Logger logger = getLogger(LazyLoader.class);
 
     public LazyLoader(Connection connection, SqlEngine sqlEngine) {
         this.connection = connection;
         this.sqlEngine = sqlEngine;
     }
 
-    public LazyLoader(Connection connection, SqlEngine sqlEngine, Class classe) throws LoadLazyObjectException {
+    public LazyLoader(Connection connection, SqlEngine sqlEngine, Class classe) {
         this.connection = connection;
         this.sqlEngine = sqlEngine;
         this.classe = classe;
@@ -84,7 +86,7 @@ public class LazyLoader implements ResultIterator {
                 resultSet.close();
             }
         } catch(Exception e) {
-            e.printStackTrace();;
+            logger.error("context", e);
         }
 
         return false;
@@ -93,9 +95,9 @@ public class LazyLoader implements ResultIterator {
 
     public LazyLoader findWithQueryExecute(String sql) throws LoadLazyObjectException {
 
-        final QueryResult QueryResult = (QueryResult) classe.getAnnotation(QueryResult.class);
+        final QueryResult queryResult = (QueryResult) classe.getAnnotation(QueryResult.class);
 
-        if (QueryResult == null) {
+        if (queryResult == null) {
             throw new LoadLazyObjectException(classe.getName() + " not is QueryResult");
         }
 
@@ -107,7 +109,7 @@ public class LazyLoader implements ResultIterator {
             return this;
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("context", e);
         }
 
         return null;
@@ -123,7 +125,7 @@ public class LazyLoader implements ResultIterator {
             return this;
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("context", e);
         }
 
         return null;
@@ -173,13 +175,9 @@ public class LazyLoader implements ResultIterator {
 
                 Object inst = proxy.invokeSuper(obj, args);
 
-                if (inst != null) {
-
-                    if (inst.getClass().getAnnotation(Entity.class) != null) {
-                        Long id = ((PersistentEntity) inst).getId();
-                        return loadLazyObject(inst.getClass(), id);
-                    }
-
+                if (inst != null && inst.getClass().getAnnotation(Entity.class) != null) {
+                    Long id = ((PersistentEntity) inst).getId();
+                    return loadLazyObject(inst.getClass(), id);
                 }
 
                 return proxy.invokeSuper(obj, args);
@@ -221,6 +219,7 @@ public class LazyLoader implements ResultIterator {
     }
 
     private void loadObject(Field[] fields, Object object, ResultSet resultSet) {
+
         for (Field field : fields) {
 
             if (field.isAnnotationPresent(Transient.class)) {
@@ -243,7 +242,7 @@ public class LazyLoader implements ResultIterator {
                             .invoke(object, instance);
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("context", e);
                 }
 
                 continue;
@@ -253,7 +252,7 @@ public class LazyLoader implements ResultIterator {
                 try {
                     ((PersistentEntity)object).setId(resultSet.getLong("id"));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("context", e);
                 }
             }
 
@@ -266,7 +265,7 @@ public class LazyLoader implements ResultIterator {
                             .invoke(object, value);
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("context", e);
                 }
 
             } else if (field.getType() == Integer.class || field.getType() == int.class) {
@@ -278,7 +277,7 @@ public class LazyLoader implements ResultIterator {
                             .invoke(object, value);
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("context", e);
                 }
             } else if (field.getType() == Float.class || field.getType() == float.class) {
                 try {
@@ -289,7 +288,7 @@ public class LazyLoader implements ResultIterator {
                             .invoke(object, value);
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("context", e);
                 }
             } else if (field.getType() == Double.class || field.getType() == double.class) {
 
@@ -301,7 +300,7 @@ public class LazyLoader implements ResultIterator {
                             .invoke(object, value);
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("context", e);
                 }
 
             } else if (field.getType() == Boolean.class || field.getType() == boolean.class) {
@@ -315,11 +314,11 @@ public class LazyLoader implements ResultIterator {
                                 .invoke(object, value);
 
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("context", e);
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("context", e);
                 }
             } else if (field.getType() == String.class || field.getType() == char.class) {
                 try {
@@ -332,11 +331,11 @@ public class LazyLoader implements ResultIterator {
                                 .invoke(object, value);
 
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("context", e);
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("context", e);
                 }
             } else if (field.getType() == byte[].class) {
                 try {
@@ -349,11 +348,11 @@ public class LazyLoader implements ResultIterator {
                                 .invoke(object, value);
 
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("context", e);
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("context", e);
                 }
             } else if (field.getType() == List.class && field.isAnnotationPresent(Json.class)) {
                 try {
@@ -376,11 +375,11 @@ public class LazyLoader implements ResultIterator {
                         }
 
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("context", e);
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("context", e);
                 }
             }
 

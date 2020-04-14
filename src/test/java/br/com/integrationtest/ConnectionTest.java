@@ -4,6 +4,7 @@ import br.com.climb.core.ClimbORM;
 import br.com.climb.core.interfaces.ClimbConnection;
 import br.com.climb.core.interfaces.ManagerFactory;
 import br.com.climb.core.interfaces.ResultIterator;
+import br.com.climb.core.sqlengine.interfaces.HasSchema;
 import br.com.climb.test.model.*;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ConnectionTestxxx {
+public class ConnectionTest {
 
     public static Long idPessoa;
     public static Long idCidade;
@@ -43,6 +44,7 @@ public class ConnectionTestxxx {
     void test_insert() {
 
         ClimbConnection connection = managerFactory.getConnection();
+        ((HasSchema)connection).setSchema("public");
 
         connection.getTransaction().start();
 
@@ -99,6 +101,7 @@ public class ConnectionTestxxx {
     void test_select() {
 
         ClimbConnection connection = managerFactory.getConnection();
+        ((HasSchema)connection).setSchema("public");
         Pessoa pessoa = (Pessoa) connection.findOne(Pessoa.class, idPessoa);
 
         assertTrue(pessoa != null);
@@ -112,6 +115,7 @@ public class ConnectionTestxxx {
         connection.close();
 
         connection = managerFactory.getConnection();
+        ((HasSchema)connection).setSchema("public");
         ResultIterator iterator = connection.find(Pessoa.class, "where id = " + idPessoa.toString());
 
         assertTrue(iterator != null);
@@ -150,16 +154,22 @@ public class ConnectionTestxxx {
     void test_update() {
 
         ClimbConnection connection = managerFactory.getConnection();
-        connection.getTransaction().start();
+//        connection.getTransaction().start();
 
         Cidade cidade = (Cidade) connection.findOne(Cidade.class, idCidade);
+        System.out.println(cidade.getNomeDaCidade());
+
         cidade.setNomeDaCidade("Jipa");
         connection.update(cidade);
+
+        cidade = (Cidade) connection.findOne(Cidade.class, idCidade);
         assertTrue(cidade.getId().equals(idCidade));
 
         Endereco endereco = (Endereco) connection.findOne(Endereco.class, idEndereco);
         endereco.setNomeDaRua("Rua Taliba");
         connection.update(endereco);
+
+
         assertTrue(endereco.getId().equals(idEndereco));
 
         Pessoa pessoa = (Pessoa) connection.findOne(Pessoa.class, idPessoa);
@@ -176,11 +186,10 @@ public class ConnectionTestxxx {
 
         assertTrue(pessoa.getId().equals(idPessoa));
 
-        connection.getTransaction().commit();
+//        connection.getTransaction().commit();
         connection.close();
 
         connection = managerFactory.getConnection();
-
         pessoa = (Pessoa) connection.findOne(Pessoa.class, idPessoa);
 
         System.out.println("size: " + pessoa.getEmails().size());
@@ -192,6 +201,8 @@ public class ConnectionTestxxx {
         assertTrue(pessoa.getIdade().equals(32l));
         assertTrue(pessoa.getAltura().equals(174.1325525544f));
 
+        System.out.println(pessoa.getEndereco().getNomeDaRua());
+
         assertTrue(pessoa.getEnderecoComercial().equals("update"));
         assertTrue(pessoa.getEndereco() != null);
         assertTrue(pessoa.getEndereco().getId().equals(idEndereco));
@@ -200,7 +211,6 @@ public class ConnectionTestxxx {
         assertTrue(pessoa.getEndereco().getCidade() != null);
         assertTrue(pessoa.getEndereco().getCidade().getId().equals(idCidade));
         assertTrue(pessoa.getEndereco().getCidade().getNomeDaCidade().equals("Jipa"));
-
         connection.close();
 
     }

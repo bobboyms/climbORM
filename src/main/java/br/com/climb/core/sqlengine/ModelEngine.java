@@ -19,7 +19,6 @@ public abstract class ModelEngine {
         try {
             generateModel(classe.getDeclaredConstructor().newInstance()).stream().forEach((modelTableField)->{
                 if (modelTableField.getType() == byte[].class) {
-
                 } else {
                     attributes.append(modelTableField.getAttribute() + ",");
                 }

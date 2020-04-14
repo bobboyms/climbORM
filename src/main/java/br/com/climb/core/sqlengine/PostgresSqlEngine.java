@@ -1,8 +1,8 @@
 package br.com.climb.core.sqlengine;
 
 import br.com.climb.core.PersistentEntity;
-import br.com.climb.core.TransactionDB;
 import br.com.climb.core.mapping.Json;
+import br.com.climb.core.sqlengine.interfaces.HasSchema;
 import br.com.climb.core.sqlengine.interfaces.SqlEngine;
 import br.com.climb.modelbean.ModelTableField;
 import org.apache.logging.log4j.Logger;
@@ -10,15 +10,12 @@ import org.apache.logging.log4j.Logger;
 import static br.com.climb.utils.ReflectionUtil.getTableName;
 import static org.apache.logging.log4j.LogManager.getLogger;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-public class PostgresSqlEngine extends ModelEngine implements SqlEngine {
+public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSchema {
 
     private static final Logger logger = getLogger(PostgresSqlEngine.class);
-
     private String schema = "public";
-
     public PostgresSqlEngine() {}
 
     @Override
@@ -68,6 +65,8 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine {
                 "" + "WHERE id = " + id.toString();
 
         logger.info("SQL-POSTGRES: ", sql);
+
+//        System.out.println(sql);
 
         return sql;
     }
@@ -135,8 +134,13 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine {
     }
 
 
+    @Override
+    public void setSchema(String schema) {
+        this.schema = schema;
+    }
 
-
-
-
+    @Override
+    public String getSchema() {
+        return schema;
+    }
 }

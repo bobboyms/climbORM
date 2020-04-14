@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class FactoryJdbcConnection {
@@ -30,13 +31,13 @@ public class FactoryJdbcConnection {
         throw new SgdbException("unsupported database");
     }
 
-    public static Connection createJdbcConnection(ConfigFile configFile) {
+    public static Connection createJdbcConnection(ConfigFile configFile) throws SQLException {
 
         Connection connection = null;
 
         try {
 
-            if (hikariDataSource == null) {
+            if (connection == null || connection.isClosed()) {
                 hikariConfig.setJdbcUrl(getJdbcUrl(configFile));
                 hikariConfig.setUsername(configFile.getUser());
                 hikariConfig.setPassword(configFile.getPassword());
@@ -44,15 +45,16 @@ public class FactoryJdbcConnection {
                 hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
                 hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
                 hikariDataSource = new HikariDataSource(hikariConfig);
-            }
 
-            connection = hikariDataSource.getConnection();
+                connection = hikariDataSource.getConnection();
+            }
 
         } catch (SQLException | SgdbException e) {
             logger.error("context", e);
         }
 
         return connection;
+
     }
 
 }

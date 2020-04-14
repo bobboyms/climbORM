@@ -28,10 +28,19 @@ public class SqlUtil {
         return null;
     }
 
-    public synchronized static PreparedStatement preparedStatementInsertUpdate(Connection connection, List<ModelTableField> modelTableFields,
-                                                                               String sql) throws SQLException, InvocationTargetException, IntrospectionException, IllegalAccessException, JsonProcessingException {
+    public synchronized static PreparedStatement preparedStatementInsert(Connection connection, List<ModelTableField> modelTableFields,
+                                                                         String sql) throws SQLException, InvocationTargetException, IntrospectionException, IllegalAccessException, JsonProcessingException {
 
         PreparedStatement preparedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+        return getPreparedStatement(preparedStatement, modelTableFields);
+
+    }
+
+    public synchronized static PreparedStatement preparedStatementUpdate(Connection connection, List<ModelTableField> modelTableFields,
+                                                                         String sql) throws SQLException, InvocationTargetException, IntrospectionException, IllegalAccessException, JsonProcessingException {
+
+        System.out.println("UPDATE: " + sql);
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
         return getPreparedStatement(preparedStatement, modelTableFields);
 
     }
