@@ -1,0 +1,1 @@
+CREATE TABLE `teste`.`tb_pessoa` ( `id` INT NOT NULL AUTO_INCREMENT , `nome` VARCHAR(200) NULL , `endereco_comercial` INT NULL , `idade` INT NULL , `altura` DECIMAL NULL , `quantidade_quilos` DOUBLE NULL , `casado` BOOLEAN NULL , `id_endereco` INT NULL , `foto` BINARY BINARY NULL , `lista_emails` JSON NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;

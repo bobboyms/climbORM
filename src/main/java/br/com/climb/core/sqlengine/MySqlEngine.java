@@ -7,16 +7,15 @@ import br.com.climb.core.sqlengine.interfaces.SqlEngine;
 import br.com.climb.modelbean.ModelTableField;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
+
 import static br.com.climb.utils.ReflectionUtil.getTableName;
 import static org.apache.logging.log4j.LogManager.getLogger;
 
-import java.util.List;
+public class MySqlEngine extends ModelEngine implements SqlEngine {
 
-public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSchema {
-
-    private static final Logger logger = getLogger(PostgresSqlEngine.class);
-    private String schema = "public";
-    public PostgresSqlEngine() {}
+    private static final Logger logger = getLogger(MySqlEngine.class);
+    public MySqlEngine() {}
 
     @Override
     public String generateInsert(List<ModelTableField> modelTableFields, Object entity) {
@@ -36,7 +35,7 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSche
 
         final String tableName = getTableName(entity);
 
-        final String sql = "INSERT INTO " + schema + "." + tableName + "("
+        final String sql = "INSERT INTO "+ "" + tableName + "("
                 + attributes.toString().substring(0, attributes.toString().length() - 1) + ") VALUES ("
                 + values.toString().substring(0, values.toString().length() -1) + ") RETURNING ID";
 
@@ -60,7 +59,7 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSche
         final String tableName = getTableName(entity);
         final Long id = ((PersistentEntity)entity).getId();
 
-        final String sql = "UPDATE " + schema + "." + tableName + " SET " +
+        final String sql = "UPDATE " + "" + tableName + " SET " +
                 "" + values.toString().substring(0, values.toString().length() -1) + " " +
                 "" + "WHERE id = " + id.toString();
 
@@ -76,7 +75,7 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSche
 
         final String tableName = getTableName(entity);
         final Long id = ((PersistentEntity)entity).getId();
-        final String sql = "DELETE FROM " + schema + "." + tableName + " WHERE id = " + id.toString();
+        final String sql = "DELETE FROM " + "" + tableName + " WHERE id = " + id.toString();
 
         logger.info("SQL-POSTGRES: ", sql);
 
@@ -86,7 +85,7 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSche
     @Override
     public String generateDelete(Class classe, String where) throws Exception {
         final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());
-        final String sql = "DELETE FROM " + schema + "." + tableName + " " + where;
+        final String sql = "DELETE FROM " + "" + tableName + " " + where;
 
         logger.info("SQL-POSTGRES: ", sql);
 
@@ -100,7 +99,7 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSche
         final var attributes = getAttributes(classe);
 
         final String sql = "SELECT id," + attributes.toString().substring(0, attributes.toString().length() - 1) + " FROM "
-            + schema + "." + tableName + " " + where;
+                + tableName + " " + where;
 
         logger.info("SQL-POSTGRES: ", sql);
 
@@ -114,8 +113,7 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSche
         final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());
         final var attributes = getAttributes(classe);
 
-        final String sql = "SELECT id," + attributes.toString().substring(0, attributes.toString().length() - 1) + " FROM " +
-                schema + "."+ tableName + " WHERE ID="+id.toString();
+        final String sql = "SELECT id," + attributes.toString().substring(0, attributes.toString().length() - 1) + " FROM " + "" + tableName + " WHERE ID="+id.toString();
 
         logger.info("SQL-POSTGRES: ", sql);
 
@@ -125,7 +123,7 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSche
 
     public String generateSelectOneAtt(Long id, String field, String entity) {
 
-        final String sql = "SELECT " + field + " FROM " + schema + "." + entity + " WHERE ID = " + id.toString();
+        final String sql = "SELECT " + field + " FROM " + entity + " WHERE ID = " + id.toString();
 
         logger.info("SQL-POSTGRES: ", sql);
 
@@ -133,14 +131,4 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSche
 
     }
 
-
-    @Override
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
-    @Override
-    public String getSchema() {
-        return schema;
-    }
 }
