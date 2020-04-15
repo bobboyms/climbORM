@@ -25,19 +25,14 @@ public class MySqlEngine extends ModelEngine implements SqlEngine {
 
         modelTableFields.stream().forEach((modelTableField) -> {
             attributes.append(modelTableField.getAttribute() + ",");
-            if (modelTableField.getField().isAnnotationPresent(Json.class)) {
-                Json json = modelTableField.getField().getAnnotation(Json.class);
-                values.append("?::"+json.typeJson()+",");
-            } else {
-                values.append("?,");
-            }
+            values.append("?,");
         });
 
         final String tableName = getTableName(entity);
 
-        final String sql = "INSERT INTO "+ "" + tableName + "("
+        final String sql = "INSERT INTO " + tableName + "("
                 + attributes.toString().substring(0, attributes.toString().length() - 1) + ") VALUES ("
-                + values.toString().substring(0, values.toString().length() -1) + ") RETURNING ID";
+                + values.toString().substring(0, values.toString().length() -1) + ")";
 
         logger.info("SQL-POSTGRES: ", sql);
         return sql;
@@ -49,17 +44,13 @@ public class MySqlEngine extends ModelEngine implements SqlEngine {
         final var values = new StringBuilder();
 
         modelTableFields.stream().forEach((modelTableField) -> {
-            if (modelTableField.getField().isAnnotationPresent(Json.class)) {
-                values.append(modelTableField.getAttribute() + "= ?::JSON,");
-            } else {
-                values.append(modelTableField.getAttribute() + "= ?,");
-            }
+            values.append(modelTableField.getAttribute() + "= ?,");
         });
 
         final String tableName = getTableName(entity);
         final Long id = ((PersistentEntity)entity).getId();
 
-        final String sql = "UPDATE " + "" + tableName + " SET " +
+        final String sql = "UPDATE " + tableName + " SET " +
                 "" + values.toString().substring(0, values.toString().length() -1) + " " +
                 "" + "WHERE id = " + id.toString();
 
@@ -75,7 +66,7 @@ public class MySqlEngine extends ModelEngine implements SqlEngine {
 
         final String tableName = getTableName(entity);
         final Long id = ((PersistentEntity)entity).getId();
-        final String sql = "DELETE FROM " + "" + tableName + " WHERE id = " + id.toString();
+        final String sql = "DELETE FROM " + tableName + " WHERE id = " + id.toString();
 
         logger.info("SQL-POSTGRES: ", sql);
 
@@ -85,7 +76,7 @@ public class MySqlEngine extends ModelEngine implements SqlEngine {
     @Override
     public String generateDelete(Class classe, String where) throws Exception {
         final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());
-        final String sql = "DELETE FROM " + "" + tableName + " " + where;
+        final String sql = "DELETE FROM " +  tableName + " " + where;
 
         logger.info("SQL-POSTGRES: ", sql);
 
@@ -99,7 +90,7 @@ public class MySqlEngine extends ModelEngine implements SqlEngine {
         final var attributes = getAttributes(classe);
 
         final String sql = "SELECT id," + attributes.toString().substring(0, attributes.toString().length() - 1) + " FROM "
-                + tableName + " " + where;
+             + tableName + " " + where;
 
         logger.info("SQL-POSTGRES: ", sql);
 
@@ -113,7 +104,8 @@ public class MySqlEngine extends ModelEngine implements SqlEngine {
         final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());
         final var attributes = getAttributes(classe);
 
-        final String sql = "SELECT id," + attributes.toString().substring(0, attributes.toString().length() - 1) + " FROM " + "" + tableName + " WHERE ID="+id.toString();
+        final String sql = "SELECT id," + attributes.toString().substring(0, attributes.toString().length() - 1) + " FROM " +
+                tableName + " WHERE ID="+id.toString();
 
         logger.info("SQL-POSTGRES: ", sql);
 

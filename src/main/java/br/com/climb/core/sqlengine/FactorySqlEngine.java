@@ -7,9 +7,10 @@ import br.com.climb.modelbean.ModelTableField;
 
 import java.util.List;
 
+import static br.com.climb.utils.SuportedSgdb.MY_SQL;
 import static br.com.climb.utils.SuportedSgdb.POSTGRES;
 
-public class FactorySqlEngine {
+public final class FactorySqlEngine {
 
     private FactorySqlEngine(){}
 
@@ -17,6 +18,10 @@ public class FactorySqlEngine {
 
         if (configFile.getDriver().equals(POSTGRES)) {
             return new PostgresSqlEngine();
+        }
+
+        if (configFile.getDriver().equals(MY_SQL)) {
+            return new MySqlEngine();
         }
 
         throw new SgdbException("unsupported database");

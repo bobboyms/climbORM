@@ -1,6 +1,8 @@
 package br.com.climb.core.jdbcconnection;
 
 import br.com.climb.configfile.interfaces.ConfigFile;
+
+import static br.com.climb.utils.SuportedSgdb.MY_SQL;
 import static br.com.climb.utils.SuportedSgdb.POSTGRES;
 
 import br.com.climb.exception.SgdbException;
@@ -26,6 +28,12 @@ public class FactoryJdbcConnection {
 
         if (configFile.getDriver().equals(POSTGRES)) {
             return "jdbc:postgresql://" + configFile.getUrl() + ":" + configFile.getPort() + "/" + configFile.getDatabase();
+        }
+
+        if (configFile.getDriver().equals(MY_SQL)) {
+            return "jdbc:mysql://" + configFile.getUrl() + ":" + configFile.getPort() + "/" + configFile.getDatabase();
+
+//            "jdbc:mysql://localhost:3306/testdb?useSSL=false";
         }
 
         throw new SgdbException("unsupported database");

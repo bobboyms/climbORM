@@ -66,7 +66,7 @@ public abstract class ConnectionOperation implements ClimbConnection {
                 try (ResultSet rsID = preparedStatement.getGeneratedKeys()) {
 
                     if (rsID.next()) {
-                        ((PersistentEntity)object).setId(rsID.getLong("id"));
+                        ((PersistentEntity)object).setId(rsID.getLong(1));
                         cacheManager.addToCache(object);
                     } else {
                         throw new SgdbException("FATAL ERROR: it was not possible to obtain the sequential code after the insert");

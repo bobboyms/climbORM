@@ -42,11 +42,14 @@ dependencies {
     // https://mvnrepository.com/artifact/org.postgresql/postgresql
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.11'
 
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.16'
+
     //JDBC Connection pool
     compile 'com.zaxxer:HikariCP:3.4.2'
 
-
 }
+
 
 application {
     // Define the main class for the application.
@@ -57,3 +60,8 @@ test {
     // Use junit platform for unit tests
     useJUnitPlatform()
 }
+
+configurations {
+    deployerJars
+}
+

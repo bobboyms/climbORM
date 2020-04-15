@@ -56,7 +56,7 @@ class CacheManagerImpTest {
         CacheManagerImp cacheManagerImp = new CacheManagerImp(configFile);
         Object object = cacheManagerImp.getValueCache(Pessoa.class, 1l);
 
-        System.out.println(((Pessoa)object).getNome());
+//        System.out.println(((Pessoa)object).getNome());
 //        System.out.println(commandDTO.getValue());
 
     }
