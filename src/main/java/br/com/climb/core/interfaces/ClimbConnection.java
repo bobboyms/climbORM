@@ -6,8 +6,8 @@ public interface ClimbConnection {
     void delete(Object object);
     void delete(Class object, String where);
 
-    void close();
     Transaction getTransaction();
+    void close();
 
     Object findOne(Class classe, Long id);
     ResultIterator find(Class classe, String where);

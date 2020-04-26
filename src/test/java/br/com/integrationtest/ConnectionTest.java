@@ -9,6 +9,7 @@ import br.com.climb.test.model.*;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -214,11 +215,11 @@ public class ConnectionTest {
 
     @Test
     @Order(6)
-    void test_deleteAllBase() {
+    void test_deleteAllBase() throws IOException {
         ClimbConnection connection = managerFactory.getConnection();
 
         connection.getTransaction().start();
-        connection.delete(Pessoa.class, "where id = " + idPessoa.toString());
+        connection.delete(Pessoa.class, String.format("where id = %s", idPessoa));
         connection.delete(Cidade.class, "where id = " + idCidade.toString());
         connection.delete(Endereco.class, "where id = " + idEndereco.toString());
 

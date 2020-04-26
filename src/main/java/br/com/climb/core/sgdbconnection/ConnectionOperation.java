@@ -7,7 +7,6 @@ import br.com.climb.core.TransactionDB;
 import br.com.climb.core.interfaces.ClimbConnection;
 import br.com.climb.core.interfaces.ResultIterator;
 import br.com.climb.core.interfaces.Transaction;
-import br.com.climb.core.sqlengine.interfaces.HasSchema;
 import br.com.climb.core.sqlengine.interfaces.SqlEngine;
 import br.com.climb.exception.SgdbException;
 import br.com.climb.modelbean.ModelTableField;
@@ -15,6 +14,7 @@ import br.com.climb.systemcache.CacheManager;
 import br.com.climb.systemcache.CacheManagerImp;
 import org.apache.logging.log4j.Logger;
 
+import java.io.Closeable;
 import java.sql.*;
 import java.util.List;
 
@@ -27,13 +27,12 @@ import static org.apache.logging.log4j.LogManager.getLogger;
 
 public abstract class ConnectionOperation implements ClimbConnection {
 
-    private static final Logger logger = getLogger(PostgresConnection.class);
+    private static final Logger logger = getLogger(ConnectionOperation.class);
 
     private Connection connection;
     private Transaction transaction;
     private SqlEngine sqlEngine;
     private CacheManager cacheManager;
-
 
     public ConnectionOperation(ConfigFile configFile) {
 
@@ -59,7 +58,7 @@ public abstract class ConnectionOperation implements ClimbConnection {
 
             final List<ModelTableField> modelTableFields = generateModel(object);
 
-            try (PreparedStatement preparedStatement = preparedStatementInsert(connection, modelTableFields, sqlEngine.generateInsert(modelTableFields, object))){
+            try (PreparedStatement preparedStatement = preparedStatementInsert(connection, modelTableFields, sqlEngine.generateInsert(modelTableFields, object))) {
 
                 preparedStatement.executeUpdate();
 
@@ -101,8 +100,8 @@ public abstract class ConnectionOperation implements ClimbConnection {
 
             final List<ModelTableField> modelTableFields = generateModel(object);
 
-            try (Statement stmt = connection.createStatement()) {
-                stmt.execute(sqlEngine.generateDelete(object));
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(sqlEngine.generateDelete(object));
                 ((PersistentEntity)object).setId(null);
             }
 
@@ -113,10 +112,11 @@ public abstract class ConnectionOperation implements ClimbConnection {
 
     @Override
     public void delete(Class object, String where) {
+
         try {
 
-            try (Statement stmt = connection.createStatement()) {
-                stmt.execute(sqlEngine.generateDelete(object, where));
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(sqlEngine.generateDelete(object, where));
             }
 
         } catch (Exception e) {

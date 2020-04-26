@@ -6,12 +6,20 @@
  * User Manual available at https://docs.gradle.org/6.3/userguide/tutorial_java_projects.html
  */
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
+
 plugins {
     // Apply the java plugin to add support for Java
     id 'java'
 
     // Apply the application plugin to add support for building a CLI application.
     id 'application'
+
+    id "com.jfrog.bintray" version "1.8.4"
 }
 
 repositories {
@@ -31,25 +39,105 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
     testCompile 'org.hamcrest:hamcrest-library:2.1'
 
-    compile group: 'org.apache.logging.log4j', name: 'log4j', version: '2.13.1'
+//    Cannot resolve org.apache.logging.log4j:log4j:2.13.1
+
+//    compile group: 'org.apache.logging.log4j', name: 'log4j', version: '2.13.1'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.1'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.1'
     compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.13.1'
 
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.10.1'
-    compile 'cglib:cglib:3.2.4'
-
     // https://mvnrepository.com/artifact/org.postgresql/postgresql
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.11'
+    runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.2.11'
 
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
-    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.16'
+    runtimeOnly group: 'mysql', name: 'mysql-connector-java', version: '8.0.16'
 
     //JDBC Connection pool
     compile 'com.zaxxer:HikariCP:3.4.2'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.10.1'
+    compile 'cglib:cglib:3.2.4'
 
 }
 
+group = 'br.com.climb'
+version = '1.0.1'
+//archivesBaseName = 'climborm'
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+    apply plugin: 'java'
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "br.com.clim"
+            name "climb-orm"
+            email "thiago.luiz.rodriguez@gmail.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/bobboyms/climbORM"
+    }
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = "sources"
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            artifact sourceJar
+            groupId 'br.com.climb'
+            artifactId 'climb-orm'
+            version version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Alternative for JPA')
+                root.appendNode('name', 'ClimbORM')
+                root.appendNode('url', 'https://github.com/bobboyms/climbORM')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+bintray {
+    user = 'bobboyms' //project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = '98e82d72304225bd12b4501c2f9997a12f9c00b1' //project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    publications = ['MyPublication']
+    pkg {
+        repo = 'climbORM'
+        name = 'climb-orm'
+        userOrg = user
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/bobboyms/climbORM'
+        labels = ['ORM', 'JPA', 'Data','Alternative']
+        publicDownloadNumbers = true
+//        attributes= ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee'] //Optional package-level attributes
+        version {
+            name = version
+            desc = 'Alternative for JPA'
+            vcsTag = version
+            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
+        }
+    }
+}
 
 application {
     // Define the main class for the application.
@@ -64,4 +152,5 @@ test {
 configurations {
     deployerJars
 }
+
 
