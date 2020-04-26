@@ -343,7 +343,7 @@ public class LazyLoader implements ResultIterator {
                     try {
                         ObjectMapper mapper = new ObjectMapper();
 
-                        Class jsonType = (Class) ((ParameterizedType) field.getGenericType())
+                        Class fieldType = (Class) ((ParameterizedType) field.getGenericType())
                                 .getActualTypeArguments()[0];
 
                         String fieldName = ReflectionUtil.getFieldName(field);
@@ -351,7 +351,7 @@ public class LazyLoader implements ResultIterator {
 
                         if (json != null && json.trim().length() > 0) {
                             ArrayList value = mapper.readValue(json,
-                                    mapper.getTypeFactory().constructCollectionType(List.class, jsonType));
+                                    mapper.getTypeFactory().constructCollectionType(List.class, fieldType));
 
                             new PropertyDescriptor(field.getName(), object.getClass()).getWriteMethod()
                                     .invoke(object, value);
