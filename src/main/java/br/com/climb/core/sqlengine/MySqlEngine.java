@@ -99,6 +99,12 @@ public class MySqlEngine extends ModelEngine implements SqlEngine {
     }
 
     @Override
+    public String generateSelectMany(Class classe) throws Exception {
+        final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());
+        return "SELECT * FROM " + tableName;
+    }
+
+    @Override
     public String generateSelectOne(Class classe, Long id) throws Exception {
 
         final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());

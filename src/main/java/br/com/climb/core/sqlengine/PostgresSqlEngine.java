@@ -109,6 +109,12 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSche
     }
 
     @Override
+    public String generateSelectMany(Class classe) throws Exception {
+        final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());
+        return "SELECT * FROM " + schema + "."+ tableName;
+    }
+
+    @Override
     public String generateSelectOne(Class classe, Long id) throws Exception {
 
         final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());

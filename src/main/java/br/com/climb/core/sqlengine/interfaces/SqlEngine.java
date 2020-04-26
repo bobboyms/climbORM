@@ -12,6 +12,7 @@ public interface SqlEngine {
     String generateDelete(Class classe, String where) throws Exception;
     String generateSelectOne(Class classe, Long id) throws Exception;
     String generateSelectMany(Class classe, String where) throws Exception;
+    String generateSelectMany(Class classe) throws Exception;
     String generateSelectOneAtt(Long id, String field, String entity);
 
 }

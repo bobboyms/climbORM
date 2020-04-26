@@ -43,7 +43,7 @@ public abstract class ConnectionOperation implements ClimbConnection {
             this.cacheManager = CacheManagerImp.build(configFile);
 
         } catch (Exception e) {
-            logger.error("context", e);
+            logger.error( e);
         }
     }
 
