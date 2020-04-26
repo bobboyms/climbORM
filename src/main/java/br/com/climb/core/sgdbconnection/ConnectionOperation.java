@@ -14,7 +14,6 @@ import br.com.climb.systemcache.CacheManager;
 import br.com.climb.systemcache.CacheManagerImp;
 import org.apache.logging.log4j.Logger;
 
-import java.io.Closeable;
 import java.sql.*;
 import java.util.List;
 
@@ -37,13 +36,14 @@ public abstract class ConnectionOperation implements ClimbConnection {
     public ConnectionOperation(ConfigFile configFile) {
 
         try {
+
             this.connection = createJdbcConnection(configFile);
             this.transaction = new TransactionDB(connection);
             this.sqlEngine = generateSqlEngine(configFile);
             this.cacheManager = CacheManagerImp.build(configFile);
 
         } catch (Exception e) {
-            logger.error( e);
+            logger.error(e);
         }
     }
 
@@ -157,6 +157,19 @@ public abstract class ConnectionOperation implements ClimbConnection {
         try {
 
             return new LazyLoader(connection, sqlEngine, classe).findWithWhereQueryExecute(sqlEngine.generateSelectMany(classe,where));
+
+        } catch (Exception e) {
+            logger.error("context", e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public ResultIterator find(Class classe) {
+        try {
+
+            return new LazyLoader(connection, sqlEngine, classe).findWithWhereQueryExecute(sqlEngine.generateSelectMany(classe));
 
         } catch (Exception e) {
             logger.error("context", e);

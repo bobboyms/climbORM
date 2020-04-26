@@ -11,6 +11,7 @@ public interface ClimbConnection {
 
     Object findOne(Class classe, Long id);
     ResultIterator find(Class classe, String where);
+    ResultIterator find(Class classe);
     ResultIterator findWithQuery(Class classe, String sql);
 
 }

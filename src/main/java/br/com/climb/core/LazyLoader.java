@@ -48,23 +48,6 @@ public class LazyLoader implements ResultIterator {
         this.classe = classe;
     }
 
-//    public LazyLoader(Connection connection, FieldsManager fieldsManager, String schema, Class classe, String sql, String typeQuery) {
-//        this.connection = connection;
-//        this.schema = schema;
-//        this.sql = sql;
-//        this.classe = classe;
-//        this.fieldsManager = fieldsManager;
-////
-////        if (typeQuery.equals(QUERY_RESULT)) {
-////            findWithQueryExecute();
-////        } else if (typeQuery.equals(ENTITY)) {
-////            findWithWhereQueryExecute();
-////        } else {
-////            throw new Error("Invalid typeQuery : " + typeQuery);
-////        }
-//
-//    }
-
     @Override
     public Object getObject() {
         return this.object;
@@ -76,12 +59,12 @@ public class LazyLoader implements ResultIterator {
         try {
 
             if (resultSet.next()) {
-
                 object = newEnhancer(classe).create();
                 Field[] fields = object.getClass().getSuperclass().getDeclaredFields();
                 loadObject(fields, object, resultSet);
 
                 return true;
+
             } else {
                 resultSet.close();
             }

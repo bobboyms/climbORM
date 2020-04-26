@@ -1,7 +1,6 @@
 package br.com.climb.core.sqlengine;
 
 
-import br.com.climb.core.sgdbconnection.PostgresConnection;
 import org.apache.logging.log4j.Logger;
 
 import static br.com.climb.utils.ReflectionUtil.generateModel;
