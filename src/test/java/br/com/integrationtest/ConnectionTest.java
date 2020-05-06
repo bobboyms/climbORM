@@ -5,6 +5,7 @@ import br.com.climb.core.interfaces.ClimbConnection;
 import br.com.climb.core.interfaces.ManagerFactory;
 import br.com.climb.core.interfaces.ResultIterator;
 import br.com.climb.core.sqlengine.interfaces.HasSchema;
+import br.com.climb.exception.SgdbException;
 import br.com.climb.test.model.*;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ public class ConnectionTest {
 
     @Test
     @Order(1)
-    void test_connection() {
+    void test_connection() throws SgdbException {
         managerFactory = ClimbORM.createManagerFactory("climb.properties");
         ClimbConnection connection = managerFactory.getConnection();
         assertTrue(connection != null);
@@ -42,7 +43,7 @@ public class ConnectionTest {
 
     @Test
     @Order(2)
-    void test_insert() {
+    void test_insert() throws SgdbException {
 
         ClimbConnection connection = managerFactory.getConnection();
 
@@ -98,7 +99,7 @@ public class ConnectionTest {
 
     @Test
     @Order(4)
-    void test_select() {
+    void test_select() throws SgdbException {
 
         ClimbConnection connection = managerFactory.getConnection();
         Pessoa pessoa = (Pessoa) connection.findOne(Pessoa.class, idPessoa);
@@ -130,18 +131,18 @@ public class ConnectionTest {
             assertTrue(pessoa1.getEndereco().getCidade().getId() != null);
         }
 
-//        ResultIterator resultIterator = connection.findWithQuery(RespostaQuery.class, "SELECT " +
-//                "p.nome, e.nome_da_rua, p.id_endereco, c.nome_da_cidade, p.lista_emails " +
-//                "FROM public.tb_pessoa p \n" +
-//                "INNER JOIN public.tb_endereco e on p.id_endereco = e.id\n" +
-//                "INNER JOIN public.tb_cidade c on e.id_cidade = c.id\n" +
-//                "where e.id_cidade > 1 and p.lista_emails is not null");
-//
-//        while(resultIterator.next()) {
-//            RespostaQuery RespostaQuery = (RespostaQuery) resultIterator.getObject();
-//            assertTrue(RespostaQuery != null);
-//            assertTrue(RespostaQuery.getNome() != null);
-//        }
+        ResultIterator resultIterator = connection.findWithQuery(RespostaQuery.class, "SELECT " +
+                "p.nome, e.nome_da_rua, p.id_endereco, c.nome_da_cidade, p.lista_emails " +
+                "FROM public.tb_pessoa p \n" +
+                "INNER JOIN public.tb_endereco e on p.id_endereco = e.id\n" +
+                "INNER JOIN public.tb_cidade c on e.id_cidade = c.id\n" +
+                "where e.id_cidade > 1 and p.lista_emails is not null");
+
+        while(resultIterator.next()) {
+            RespostaQuery RespostaQuery = (RespostaQuery) resultIterator.getObject();
+            assertTrue(RespostaQuery != null);
+            assertTrue(RespostaQuery.getNome() != null);
+        }
 
         connection.close();
 
@@ -149,7 +150,7 @@ public class ConnectionTest {
 
     @Test
     @Order(5)
-    void test_update() {
+    void test_update() throws SgdbException {
 
         ClimbConnection connection = managerFactory.getConnection();
 //        connection.getTransaction().start();
@@ -215,7 +216,7 @@ public class ConnectionTest {
 
     @Test
     @Order(6)
-    void test_deleteAllBase() throws IOException {
+    void test_deleteAllBase() throws IOException, SgdbException {
         ClimbConnection connection = managerFactory.getConnection();
 
         connection.getTransaction().start();

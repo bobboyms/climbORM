@@ -12,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class FactoryJdbcConnection {
@@ -32,30 +31,29 @@ public class FactoryJdbcConnection {
 
         if (configFile.getDriver().equals(MY_SQL)) {
             return "jdbc:mysql://" + configFile.getUrl() + ":" + configFile.getPort() + "/" + configFile.getDatabase();
-
-//            "jdbc:mysql://localhost:3306/testdb?useSSL=false";
         }
 
         throw new SgdbException("unsupported database");
     }
 
-    public static Connection createJdbcConnection(ConfigFile configFile) throws SQLException {
+    public static Connection createJdbcConnection(ConfigFile configFile) {
 
         Connection connection = null;
 
         try {
 
-            if (connection == null || connection.isClosed()) {
-                hikariConfig.setJdbcUrl(getJdbcUrl(configFile));
-                hikariConfig.setUsername(configFile.getUser());
-                hikariConfig.setPassword(configFile.getPassword());
-                hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
-                hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
-                hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-                hikariDataSource = new HikariDataSource(hikariConfig);
+            hikariConfig.setJdbcUrl(getJdbcUrl(configFile));
+            hikariConfig.setUsername(configFile.getUser());
+            hikariConfig.setPassword(configFile.getPassword());
+            hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
+            hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
+            hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
-                connection = hikariDataSource.getConnection();
+            if (hikariDataSource == null || hikariDataSource.isClosed()) {
+                hikariDataSource = new HikariDataSource(hikariConfig);
             }
+
+            connection = hikariDataSource.getConnection();
 
         } catch (SQLException | SgdbException e) {
             logger.error("context", e);

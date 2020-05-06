@@ -188,7 +188,7 @@ public class LazyLoader implements ResultIterator {
                     }
 
                     if (inst.getClass() == byte[].class) {
-                        final var fieldName = new String((byte[]) inst);
+                        final String fieldName = new String((byte[]) inst);
                         return SqlUtil.getBinaryValue(connection, sqlEngine.generateSelectOneAtt(id, fieldName, entity), fieldName);
                     }
 

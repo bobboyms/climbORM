@@ -94,6 +94,19 @@ public abstract class ConnectionOperation implements ClimbConnection {
     }
 
     @Override
+    public void update(String query) {
+        try {
+
+            try(PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.executeUpdate();
+            }
+
+        } catch (Exception e) {
+            logger.error("context", e);
+        }
+    }
+
+    @Override
     public void delete(Object object) {
 
         try {
@@ -117,6 +130,19 @@ public abstract class ConnectionOperation implements ClimbConnection {
 
             try (Statement statement = connection.createStatement()) {
                 statement.execute(sqlEngine.generateDelete(object, where));
+            }
+
+        } catch (Exception e) {
+            logger.error("context", e);
+        }
+    }
+
+    @Override
+    public void delete(String query) {
+        try {
+
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(query);
             }
 
         } catch (Exception e) {

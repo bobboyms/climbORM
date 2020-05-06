@@ -3,8 +3,10 @@ package br.com.climb.core.interfaces;
 public interface ClimbConnection {
     void save(Object object);
     void update(Object object);
+    void update(String query);
     void delete(Object object);
     void delete(Class object, String where);
+    void delete(String query);
 
     Transaction getTransaction();
     void close();

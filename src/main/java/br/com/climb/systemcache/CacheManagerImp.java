@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -37,8 +38,8 @@ public class CacheManagerImp implements CacheManager {
     }
 
     private String generateKey(Object value) {
-        var id = ((PersistentEntity)value).getId().toString();
-        var tableName =  ReflectionUtil.getTableName(value);
+        String id = ((PersistentEntity)value).getId().toString();
+        String tableName =  ReflectionUtil.getTableName(value);
         return String.valueOf((id + tableName).hashCode());
     }
 
@@ -50,16 +51,16 @@ public class CacheManagerImp implements CacheManager {
             return;
         }
 
-        final var objectMapper = new ObjectMapper();
-        final var commandDTO = new CommandDTO();
+        final ObjectMapper objectMapper = new ObjectMapper();
+        final CommandDTO commandDTO = new CommandDTO();
 
         commandDTO.setKey(generateKey(value));
         commandDTO.setValue(objectMapper.writeValueAsString(value));
 
         String message = objectMapper.writeValueAsString(commandDTO);
 
-        final var conn = getConnectionHttpPost();
-        final var os = conn.getOutputStream();
+        final HttpURLConnection conn = getConnectionHttpPost();
+        final OutputStream os = conn.getOutputStream();
         os.write(message.getBytes());
         os.flush();
 

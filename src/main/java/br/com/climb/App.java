@@ -6,10 +6,11 @@ package br.com.climb;
 import br.com.climb.core.ClimbORM;
 import br.com.climb.core.interfaces.ClimbConnection;
 import br.com.climb.core.interfaces.ManagerFactory;
+import br.com.climb.exception.SgdbException;
 
 public class App {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SgdbException {
         ManagerFactory managerFactory = ClimbORM.createManagerFactory("climb.properties");
         ClimbConnection connection = managerFactory.getConnection();
     }

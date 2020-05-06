@@ -21,8 +21,8 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSche
     @Override
     public String generateInsert(List<ModelTableField> modelTableFields, Object entity) {
 
-        final var attributes = new StringBuilder();
-        final var values = new StringBuilder();
+        final StringBuilder attributes = new StringBuilder();
+        final StringBuilder values = new StringBuilder();
 
         modelTableFields.stream().forEach((modelTableField) -> {
             attributes.append(modelTableField.getAttribute() + ",");
@@ -47,7 +47,7 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSche
     @Override
     public String generateUpdate(List<ModelTableField> modelTableFields, Object entity) {
 
-        final var values = new StringBuilder();
+        final StringBuilder values = new StringBuilder();
 
         modelTableFields.stream().forEach((modelTableField) -> {
             if (modelTableField.getField().isAnnotationPresent(Json.class)) {
@@ -97,7 +97,7 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSche
     public String generateSelectMany(Class classe, String where) throws Exception {
 
         final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());
-        final var attributes = getAttributes(classe);
+        final StringBuilder attributes = getAttributes(classe);
 
         final String sql = "SELECT id," + attributes.toString().substring(0, attributes.toString().length() - 1) + " FROM "
             + schema + "." + tableName + " " + where;
@@ -118,7 +118,7 @@ public class PostgresSqlEngine extends ModelEngine implements SqlEngine, HasSche
     public String generateSelectOne(Class classe, Long id) throws Exception {
 
         final String tableName = getTableName(classe.getDeclaredConstructor().newInstance());
-        final var attributes = getAttributes(classe);
+        final StringBuilder attributes = getAttributes(classe);
 
         final String sql = "SELECT id," + attributes.toString().substring(0, attributes.toString().length() - 1) + " FROM " +
                 schema + "."+ tableName + " WHERE ID="+id.toString();

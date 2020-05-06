@@ -8,7 +8,7 @@ public class Utils {
 
     public static boolean isStringNullOrEmpty(String value) {
 
-        if (nonNull(value) && !value.isBlank()) {
+        if (nonNull(value) && value.trim().length() > 0) {
             return false;
         }
 

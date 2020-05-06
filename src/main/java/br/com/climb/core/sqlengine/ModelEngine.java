@@ -13,7 +13,7 @@ public abstract class ModelEngine {
 
     protected StringBuilder getAttributes(Class classe) {
 
-        final var attributes = new StringBuilder();
+        final StringBuilder attributes = new StringBuilder();
 
         try {
             generateModel(classe.getDeclaredConstructor().newInstance()).stream().forEach((modelTableField)->{

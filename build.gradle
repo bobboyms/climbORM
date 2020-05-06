@@ -28,6 +28,11 @@ repositories {
     jcenter()
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:28.2-jre'
@@ -60,7 +65,7 @@ dependencies {
 }
 
 group = 'br.com.climb'
-version = '1.0.1'
+version = '1.0.5'
 //archivesBaseName = 'climborm'
 
 allprojects {
@@ -82,7 +87,7 @@ def pomConfig = {
     }
     developers {
         developer {
-            id "br.com.clim"
+            id "br.com.climb"
             name "climb-orm"
             email "thiago.luiz.rodriguez@gmail.com"
         }
@@ -105,7 +110,7 @@ publishing {
             artifact sourceJar
             groupId 'br.com.climb'
             artifactId 'climb-orm'
-            version version
+            version '1.0.5'
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'Alternative for JPA')
@@ -131,10 +136,10 @@ bintray {
         publicDownloadNumbers = true
 //        attributes= ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee'] //Optional package-level attributes
         version {
-            name = version
+            name = '1.0.5'
             desc = 'Alternative for JPA'
-            vcsTag = version
-            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
+            vcsTag = '1.0.5'
+//            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
         }
     }
 }

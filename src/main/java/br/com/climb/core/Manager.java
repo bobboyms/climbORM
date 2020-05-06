@@ -6,6 +6,7 @@ import br.com.climb.core.interfaces.ManagerFactory;
 import br.com.climb.core.sgdbconnection.MySqlConnection;
 import br.com.climb.core.sgdbconnection.PostgresConnection;
 import br.com.climb.core.sqlengine.interfaces.HasSchema;
+import br.com.climb.exception.SgdbException;
 
 import static br.com.climb.utils.SuportedSgdb.MY_SQL;
 import static br.com.climb.utils.SuportedSgdb.POSTGRES;
@@ -19,35 +20,35 @@ public class Manager implements ManagerFactory {
     }
 
     @Override
-    public ClimbConnection getConnection() {
-
-        ClimbConnection climbConnection = null;
+    public ClimbConnection getConnection() throws SgdbException {
 
         if (configFile.getDriver().equals(POSTGRES)) {
-            climbConnection = new PostgresConnection(configFile);
+            return new PostgresConnection(configFile);
         }
 
         if (configFile.getDriver().equals(MY_SQL)) {
-            climbConnection = new MySqlConnection(configFile);
+            return new MySqlConnection(configFile);
         }
 
-        return climbConnection;
+        throw new SgdbException("Connection driver not supported: "+ configFile.getDriver());
+
     }
 
     @Override
-    public ClimbConnection getConnection(String schemaName) {
+    public ClimbConnection getConnection(String schemaName) throws SgdbException {
 
-        ClimbConnection climbConnection = null;
 
         if (configFile.getDriver().equals(POSTGRES)) {
-            climbConnection = new PostgresConnection(configFile);
+            final ClimbConnection climbConnection = new PostgresConnection(configFile);
             ((HasSchema)climbConnection).setSchema(schemaName);
+            return climbConnection;
         }
 
         if (configFile.getDriver().equals(MY_SQL)) {
-            climbConnection = new MySqlConnection(configFile);
+            return new MySqlConnection(configFile);
         }
 
-        return climbConnection;
+        throw new SgdbException("Connection driver not supported: "+ configFile.getDriver());
+
     }
 }
