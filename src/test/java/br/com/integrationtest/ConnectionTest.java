@@ -45,48 +45,55 @@ public class ConnectionTest {
     @Order(2)
     void test_insert() throws SgdbException {
 
-        ClimbConnection connection = managerFactory.getConnection();
+        for(int i = 0; i < 100; i++) {
 
-        connection.getTransaction().start();
+            ClimbConnection connection = managerFactory.getConnection();
+            System.out.println(connection);
 
-        Cidade cidade = new Cidade();
-        cidade.setNomeDaCidade("Cacoal");
-        connection.save(cidade);
+            connection.getTransaction().start();
 
-        idCidade = cidade.getId();
-        assertTrue(idCidade != null && idCidade > 0);
+            Cidade cidade = new Cidade();
+            cidade.setNomeDaCidade("Cacoal");
+            connection.save(cidade);
 
-        Endereco endereco = new Endereco();
-        endereco.setNomeDaRua("Rua Ji-parana");
-        endereco.setCidade(cidade);
-        connection.save(endereco);
+            idCidade = cidade.getId();
+            assertTrue(idCidade != null && idCidade > 0);
 
-        idEndereco = endereco.getId();
-        assertTrue(idEndereco != null);
+            Endereco endereco = new Endereco();
+            endereco.setNomeDaRua("Rua Ji-parana");
+            endereco.setCidade(cidade);
+            connection.save(endereco);
 
-        Pessoa pessoa = new Pessoa();
-        pessoa.setNome("Maria antonia");
-        pessoa.setEnderecoComercial("Treta");
-        pessoa.setIdade(32l);
-        pessoa.setAltura(174.13255f);
-        pessoa.setQtdQuilos(145.6144d);
-        pessoa.setCasado(true);
-        pessoa.setEndereco(endereco);
-        pessoa.setFoto(new byte[] {});
+            idEndereco = endereco.getId();
+            assertTrue(idEndereco != null);
 
-        List<Email> emails = new ArrayList<>();
-        Email email = new Email();
-        email.setEmail("taliba@jose.com.br");
-        emails.add(email);
-        pessoa.setEmails(emails);
+            Pessoa pessoa = new Pessoa();
+            pessoa.setNome("Maria antonia");
+            pessoa.setEnderecoComercial("Treta");
+            pessoa.setIdade(32l);
+            pessoa.setAltura(174.13255f);
+            pessoa.setQtdQuilos(145.6144d);
+            pessoa.setCasado(true);
+            pessoa.setEndereco(endereco);
+            pessoa.setFoto(new byte[] {});
 
-        connection.save(pessoa);
+            List<Email> emails = new ArrayList<>();
+            Email email = new Email();
+            email.setEmail("taliba@jose.com.br");
+            emails.add(email);
+            pessoa.setEmails(emails);
 
-        idPessoa = pessoa.getId();
-        assertTrue(idPessoa != null);
+            connection.save(pessoa);
 
-        connection.getTransaction().commit();
-        connection.close();
+            idPessoa = pessoa.getId();
+            assertTrue(idPessoa != null);
+
+            connection.getTransaction().commit();
+            connection.close();
+
+
+        }
+
     }
 
     @Test

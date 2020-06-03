@@ -39,10 +39,9 @@ dependencies {
 
     // Use JUnit Jupiter API for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-
-    // Use JUnit Jupiter Engine for testing.
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
-    testCompile 'org.hamcrest:hamcrest-library:2.1'
+    compile 'org.hamcrest:hamcrest-library:2.1'
+
 
 //    Cannot resolve org.apache.logging.log4j:log4j:2.13.1
 
@@ -65,8 +64,7 @@ dependencies {
 }
 
 group = 'br.com.climb'
-version = '1.0.5'
-//archivesBaseName = 'climborm'
+version = '1.0.9'
 
 allprojects {
     repositories {
@@ -110,7 +108,7 @@ publishing {
             artifact sourceJar
             groupId 'br.com.climb'
             artifactId 'climb-orm'
-            version '1.0.5'
+            version '1.0.9'
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'Alternative for JPA')
@@ -136,9 +134,9 @@ bintray {
         publicDownloadNumbers = true
 //        attributes= ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee'] //Optional package-level attributes
         version {
-            name = '1.0.5'
+            name = '1.0.9'
             desc = 'Alternative for JPA'
-            vcsTag = '1.0.5'
+            vcsTag = '1.0.9'
 //            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
         }
     }

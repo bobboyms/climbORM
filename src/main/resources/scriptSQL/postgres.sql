@@ -42,3 +42,18 @@ CREATE TABLE public.tb_endereco
 
 ALTER TABLE public.tb_endereco
     OWNER to postgres;
+
+
+CREATE TABLE public.tb_cliente
+(
+    id bigserial NOT NULL,
+    nome text,
+    idade bigint,
+    peso double precision,
+    altura double precision,
+    casado boolean,
+    CONSTRAINT pk_id_cliente PRIMARY KEY (id)
+);
+
+ALTER TABLE public.tb_cliente
+    OWNER to postgres;
